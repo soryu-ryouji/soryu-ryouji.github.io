@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Ryouji&#39;s World</title>
+  
+    <link rel="icon" href="/assets/favicon.ico">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.png)">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>Ryouji&#39;s World</div>
+        
+            <div>You Can (Not) Redo</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a target="_blank" rel="noopener" href="https://github.com/soryu-ryouji">
+                    <img src="/assets/github.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <ul class="Index">
+  
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
+          <a href="/2024/06/09/nova_source_code/">Nova 源码解析</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2024-06-09T12:00:00.000Z" itemprop="datePublished">
+    2024-06-09
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/unity/">unity</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/categories/game-development/">game development</a> }
+  </li>
+
+
+  </ul>
+  
+</div>
+
+    </header>
+    <div>
+      
+        <table>
+<thead>
+<tr>
+<th align="left">path</th>
+<th align="right">files</th>
+<th align="right">code</th>
+<th align="right">comment</th>
+<th align="right">blank</th>
+<th align="right">total</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">.</td>
+<td align="right">312</td>
+<td align="right">49,225</td>
+<td align="right">2,859</td>
+<td align="right">8,490</td>
+<td align="right">60,574</td>
+</tr>
+<tr>
+<td align="left">CGInc</td>
+<td align="right">2</td>
+<td align="right">367</td>
+<td align="right">5</td>
+<td align="right">69</td>
+<td align="right">441</td>
+</tr>
+<tr>
+<td align="left">Editor</td>
+<td align="right">21</td>
+<td align="right">6,536</td>
+<td align="right">572</td>
+<td align="right">1,114</td>
+<td align="right">8,222</td>
+</tr>
+<tr>
+<td align="left">Lua</td>
+<td align="right">25</td>
+<td align="right">2,209</td>
+<td align="right">121</td>
+<td align="right">291</td>
+<td align="right">2,621</td>
+</tr>
+<tr>
+<td align="left">Settings</td>
+<td align="right">2</td>
+<td align="right">246</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">246</td>
+</tr>
+<tr>
+<td align="left">Sources</td>
+<td align="right">257</td>
+<td align="right">39,584</td>
+<td align="right">2,155</td>
+<td align="right">6,967</td>
+<td align="right">48,706</td>
+</tr>
+<tr>
+<td align="left">Sources\Core</td>
+<td align="right">82</td>
+<td align="right">8,917</td>
+<td align="right">887</td>
+<td align="right">1,706</td>
+<td align="right">11,510</td>
+</tr>
+<tr>
+<td align="left">Sources\Core\Animation</td>
+<td align="right">21</td>
+<td align="right">1,248</td>
+<td align="right">65</td>
+<td align="right">229</td>
+<td align="right">1,542</td>
+</tr>
+<tr>
+<td align="left">Sources\Core\Collections</td>
+<td align="right">3</td>
+<td align="right">268</td>
+<td align="right">10</td>
+<td align="right">55</td>
+<td align="right">333</td>
+</tr>
+<tr>
+<td align="left">Sources\Core\Input</td>
+<td align="right">7</td>
+<td align="right">731</td>
+<td align="right">24</td>
+<td align="right">119</td>
+<td align="right">874</td>
+</tr>
+<tr>
+<td align="left">Sources\Core\Restoration</td>
+<td align="right">18</td>
+<td align="right">1,755</td>
+<td align="right">144</td>
+<td align="right">330</td>
+<td align="right">2,229</td>
+</tr>
+<tr>
+<td align="left">Sources\Core\ScriptParsing</td>
+<td align="right">12</td>
+<td align="right">2,050</td>
+<td align="right">327</td>
+<td align="right">387</td>
+<td align="right">2,764</td>
+</tr>
+<tr>
+<td align="left">Sources\Core\VFX</td>
+<td align="right">5</td>
+<td align="right">415</td>
+<td align="right">27</td>
+<td align="right">85</td>
+<td align="right">527</td>
+</tr>
+<tr>
+<td align="left">Sources\Exceptions</td>
+<td align="right">3</td>
+<td align="right">30</td>
+<td align="right">3</td>
+<td align="right">6</td>
+<td align="right">39</td>
+</tr>
+<tr>
+<td align="left">Sources\Generate</td>
+<td align="right">1</td>
+<td align="right">769</td>
+<td align="right">1</td>
+<td align="right">6</td>
+<td align="right">776</td>
+</tr>
+<tr>
+<td align="left">Sources\Scripts</td>
+<td align="right">111</td>
+<td align="right">9,200</td>
+<td align="right">253</td>
+<td align="right">1,814</td>
+<td align="right">11,267</td>
+</tr>
+<tr>
+<td align="left">Sources\Scripts\Controllers</td>
+<td align="right">10</td>
+<td align="right">1,476</td>
+<td align="right">54</td>
+<td align="right">306</td>
+<td align="right">1,836</td>
+</tr>
+<tr>
+<td align="left">Sources\Scripts\Graphics</td>
+<td align="right">3</td>
+<td align="right">236</td>
+<td align="right">16</td>
+<td align="right">48</td>
+<td align="right">300</td>
+</tr>
+<tr>
+<td align="left">Sources\Scripts\SpriteCropping</td>
+<td align="right">3</td>
+<td align="right">35</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">44</td>
+</tr>
+<tr>
+<td align="left">Sources\Scripts\UI</td>
+<td align="right">68</td>
+<td align="right">6,039</td>
+<td align="right">159</td>
+<td align="right">1,173</td>
+<td align="right">7,371</td>
+</tr>
+<tr>
+<td align="left">Sources\ThirdParty</td>
+<td align="right">60</td>
+<td align="right">20,668</td>
+<td align="right">1,011</td>
+<td align="right">3,435</td>
+<td align="right">25,114</td>
+</tr>
+</tbody></table>
+<h2 id="剧本解析器"><a href="#剧本解析器" class="headerlink" title="剧本解析器"></a>剧本解析器</h2><p><code>Sources\CoreScriptParsing</code>：2000 line</p>
+<h3 id="Parser"><a href="#Parser" class="headerlink" title="Parser"></a>Parser</h3><p>Parser首先会创建一个Tokenizer对象负责解析剧本文件的标识符，再根据标识符将剧本文件分为若干块，如提前代码块（EagerCodeBlock）、代码块（CodeBlock）、文本块（TextBlock）、分隔块（SeparatorBlock）。</p>
+<p>解析好的块被称为ParsedScript，在游戏运行时被交给 <code>ScriptLoader</code> 进行执行。</p>
+        
+          <div class="more-link">
+            <a href="/2024/06/09/nova_source_code/#more">Read On »</a>
+          </div>
+        
+      
+    </div>
+</article>
+
+    </li>
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
+          <a href="/2024/05/12/writing_unit_tests_for_csharp_in_vscode/">如何在vscode中为c#编写单元测试</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2024-05-11T17:10:00.000Z" itemprop="datePublished">
+    2024-05-12
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/vscode/">vscode</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/csharp/">csharp</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/categories/programming/">programming</a> }
+  </li>
+
+
+  </ul>
+  
+</div>
+
+    </header>
+    <div>
+      
+        <h2 id="如何从零开始创建一个单元测试工程"><a href="#如何从零开始创建一个单元测试工程" class="headerlink" title="如何从零开始创建一个单元测试工程"></a>如何从零开始创建一个单元测试工程</h2><p><strong>创建测试单元工程</strong></p>
+<p>创建测试文件的方法和新建项目类似，都是使用<code>dotnet new</code>命令。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">dotnet new xunit</span><br></pre></td></tr></table></figure>
+
+<p><strong>为测试单元工程添加需要测试的工程的项目引用</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">dotnet add reference ..\program\program.csproj</span><br></pre></td></tr></table></figure>
+
+<p><strong>为sln文件添加测试单元工程的项目引用</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">dotnet sln add ..\program.test\program.test.csproj</span><br></pre></td></tr></table></figure>
+
+<p>文件的目录结构应大致如下树状图所示。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">project/</span><br><span class="line">├─program/</span><br><span class="line">│	├─src/</span><br><span class="line">│	└─program.csproj</span><br><span class="line">├─program.test/</span><br><span class="line">│	├─src/</span><br><span class="line">│	└─program.test.csproj</span><br><span class="line">└─program.sln</span><br></pre></td></tr></table></figure>
+
+<p><strong>运行测试单元</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">dotnet test</span><br></pre></td></tr></table></figure>
+
+<h2 id="单元测试中如何输出日志"><a href="#单元测试中如何输出日志" class="headerlink" title="单元测试中如何输出日志"></a>单元测试中如何输出日志</h2><blockquote>
+<p>Q：xUnit为什么没有办法直接打印输出？</p>
+<p>A：xUnit的测试会新开一个进程进行测试，因此运行<code>dotnet test</code>命令的进程没有办法捕获xUnit进程的输出。</p>
+</blockquote>
+<p>解决方案：在测试代码中添加<code>ITestOutputHelper</code>接口，并在构造函数中将其初始化，之后使用该接口的WriteLine方法输出文本。</p>
+        
+          <div class="more-link">
+            <a href="/2024/05/12/writing_unit_tests_for_csharp_in_vscode/#more">Read On »</a>
+          </div>
+        
+      
+    </div>
+</article>
+
+    </li>
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
+          <a href="/2024/05/11/how_to_build_godot_and_godot_for_csharp/">如何编译Godot（Godot &amp; Godot with C#）</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2024-05-11T12:00:00.000Z" itemprop="datePublished">
+    2024-05-11
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/godot/">godot</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/categories/game-development/">game development</a> }
+  </li>
+
+
+  </ul>
+  
+</div>
+
+    </header>
+    <div>
+      
+        <p>要在Windows下编译Godot, 需要以下环境:</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://visualstudio.microsoft.com/zh-hans/downloads/">Visual Studio Community</a>：使用最新版本。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://mingw-w64.org/">MinGW-w64</a>：可以替代 Visual Studio。请务必将其安装&#x2F;配置为使用 posix 线程模型。使用 MinGW 编译主分支时，需要 GCC 9 或更高版本。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.python.org/downloads/windows/">Python 3.6+</a>：确保在安装程序中启用将 Python 添加到环境变量中。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://scons.org/pages/download.html">SCons 3.0+</a>：构建系统。建议使用最新版本，特别是为了正确支持最近发布的 Visual Studio。</p>
+</li>
+</ul>
+        
+          <div class="more-link">
+            <a href="/2024/05/11/how_to_build_godot_and_godot_for_csharp/#more">Read On »</a>
+          </div>
+        
+      
+    </div>
+</article>
+
+    </li>
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
+          <a href="/2024/04/13/bvg-list/">Book &amp; Video &amp; Game Record List</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2024-04-13T12:00:00.000Z" itemprop="datePublished">
+    2024-04-13
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/record/">record</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/categories/life/">life</a> }
+  </li>
+
+
+  </ul>
+  
+</div>
+
+    </header>
+    <div>
+      
+        <table>
+<thead>
+<tr>
+<th align="left">Name</th>
+<th align="left">Type</th>
+<th align="left">Date</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Evangelion: Air&#x2F;真心为你</td>
+<td align="left">Video</td>
+<td align="left">2024&#x2F;04&#x2F;13</td>
+</tr>
+<tr>
+<td align="left">Evangelion: 破</td>
+<td align="left">Video</td>
+<td align="left">2024&#x2F;04&#x2F;13</td>
+</tr>
+<tr>
+<td align="left">Evangelion: Q</td>
+<td align="left">Video</td>
+<td align="left">2024&#x2F;04&#x2F;15</td>
+</tr>
+<tr>
+<td align="left">Evangelion: 终</td>
+<td align="left">Video</td>
+<td align="left">2024&#x2F;04&#x2F;19</td>
+</tr>
+<tr>
+<td align="left">流浪地球制作手记</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;05&#x2F;01</td>
+</tr>
+<tr>
+<td align="left">全部成为F</td>
+<td align="left">Video</td>
+<td align="left">2024&#x2F;06&#x2F;01</td>
+</tr>
+<tr>
+<td align="left">贝果爱情故事</td>
+<td align="left">Game</td>
+<td align="left">2024&#x2F;08&#x2F;04</td>
+</tr>
+<tr>
+<td align="left">搞定I：无压力工作的艺术</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;07&#x2F;06</td>
+</tr>
+<tr>
+<td align="left">旧制度与大革命</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;07&#x2F;10</td>
+</tr>
+<tr>
+<td align="left">世界秩序</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;07&#x2F;12</td>
+</tr>
+<tr>
+<td align="left">1973年的弹子球</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;07&#x2F;13</td>
+</tr>
+<tr>
+<td align="left">萤</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;07&#x2F;15</td>
+</tr>
+<tr>
+<td align="left">Unity人工智能游戏开发</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;08&#x2F;08</td>
+</tr>
+<tr>
+<td align="left">Unity3D人工智能编程精粹</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;08&#x2F;08</td>
+</tr>
+<tr>
+<td align="left">怎样做成大事</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;08&#x2F;12</td>
+</tr>
+<tr>
+<td align="left">检查力：打破信息茧房</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;08&#x2F;14</td>
+</tr>
+<tr>
+<td align="left">Unity API 解析</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;08&#x2F;16</td>
+</tr>
+<tr>
+<td align="left">魔法使之夜</td>
+<td align="left">Game</td>
+<td align="left">2024&#x2F;08&#x2F;18</td>
+</tr>
+<tr>
+<td align="left">游戏架构: 核心技术与面试精粹</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;08&#x2F;18</td>
+</tr>
+<tr>
+<td align="left">Effective CSharp</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;08&#x2F;19</td>
+</tr>
+<tr>
+<td align="left">CSharp 7.0 核心技术指南</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;08&#x2F;23</td>
+</tr>
+<tr>
+<td align="left">烧掉数学书: 重新发明数学</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;08&#x2F;24</td>
+</tr>
+<tr>
+<td align="left">微积分的力量</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;08&#x2F;24</td>
+</tr>
+<tr>
+<td align="left">纯爱独白: 小小</td>
+<td align="left">Game</td>
+<td align="left">2024&#x2F;08&#x2F;26</td>
+</tr>
+<tr>
+<td align="left">计算机：一部历史</td>
+<td align="left">Book</td>
+<td align="left">2024&#x2F;08&#x2F;27</td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+</article>
+
+    </li>
+  
+</ul>
+
+
+            <footer>
+    <div>© 2024 - Soryu Ryouji </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>

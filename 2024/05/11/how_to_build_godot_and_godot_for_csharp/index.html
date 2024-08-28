@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>如何编译Godot（Godot &amp; Godot with C#） | Ryouji&#39;s World</title>
+  
+    <link rel="icon" href="/assets/favicon.ico">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.png)">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>Ryouji&#39;s World</div>
+        
+            <div>You Can (Not) Redo</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a target="_blank" rel="noopener" href="https://github.com/soryu-ryouji">
+                    <img src="/assets/github.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>如何编译Godot（Godot &amp; Godot with C#）</h1>
+    </header>
+
+    <section>
+      <p>要在Windows下编译Godot, 需要以下环境:</p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://visualstudio.microsoft.com/zh-hans/downloads/">Visual Studio Community</a>：使用最新版本。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://mingw-w64.org/">MinGW-w64</a>：可以替代 Visual Studio。请务必将其安装&#x2F;配置为使用 posix 线程模型。使用 MinGW 编译主分支时，需要 GCC 9 或更高版本。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.python.org/downloads/windows/">Python 3.6+</a>：确保在安装程序中启用将 Python 添加到环境变量中。</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://scons.org/pages/download.html">SCons 3.0+</a>：构建系统。建议使用最新版本，特别是为了正确支持最近发布的 Visual Studio。</p>
+</li>
+</ul>
+<span id="more"></span>
+
+<p>为了方便起见，建议使用 <code>scoop</code> 安装所需的软件，因为它会默认将软件的路径配置到环境变量，相较于手动安装更省事一些。</p>
+<p><strong>安装scoop</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser</span><br><span class="line">Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression</span><br></pre></td></tr></table></figure>
+
+<p><strong>为 Scoop 设置代理</strong></p>
+<blockquote>
+<p>可选：如果你的scoop无法正常下载应用</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">scoop config proxy ip:port</span></span><br><span class="line">scoop config proxy 127.0.0.1:7890</span><br></pre></td></tr></table></figure>
+
+<p><strong>安装环境</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">scoop install gcc python scons make mingw</span><br></pre></td></tr></table></figure>
+
+<p><strong>安装 scons</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">python -m pip install scons</span><br></pre></td></tr></table></figure>
+
+<h2 id="编译-Godot"><a href="#编译-Godot" class="headerlink" title="编译 Godot"></a>编译 Godot</h2><p><strong>下载源代码</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/godotengine/godot.git</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用 scons 编译源代码</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">scons platform=windows</span><br></pre></td></tr></table></figure>
+
+<p>等待编译完成后，可执行文件可在 <code>godot/bin/</code> 目录下看到。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">godot</span><br><span class="line">└─bin</span><br><span class="line">  └─godot.windows.editor.x86_64.console.exe</span><br><span class="line">  └─godot.windows.editor.x86_64.exe</span><br><span class="line">  └─godot.windows.editor.x86_64.exp</span><br><span class="line">  └─godot.windows.editor.x86_64.lib</span><br></pre></td></tr></table></figure>
+
+<h2 id="编译-Godot-with-C"><a href="#编译-Godot-with-C" class="headerlink" title="编译 Godot with C#"></a>编译 Godot with C#</h2><p>使用源代码构建出 mono 版本的godot需要安装 <a target="_blank" rel="noopener" href="https://dotnet.microsoft.com/en-us/download/dotnet">.NET SDK</a></p>
+<p><strong>下载源代码</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/godotengine/godot.git</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用 scons 编译源代码</strong></p>
+<p>若要启用 <code>godot</code> 的 <code>c#</code> 支持，需要在构建时添加 <code>module_mono_enabled=yes</code> 命令。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">scons platform=windows module_mono_enabled=yes</span><br></pre></td></tr></table></figure>
+
+<p>命令执行后，godot的文件目录结构应如下所示。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">godot</span><br><span class="line">└─bin</span><br><span class="line">  └─godot.windows.editor.x86_64.mono.console.exe</span><br><span class="line">  └─godot.windows.editor.x86_64.mono.exe</span><br><span class="line">  └─godot.windows.editor.x86_64.mono.exp</span><br><span class="line">  └─godot.windows.editor.x86_64.mono.lib</span><br></pre></td></tr></table></figure>
+
+<p>但此时的 <code>godot mono</code> 还无法运行，我们需要为其添加绑定。</p>
+<p><strong>使用 godot mono 生成 .Net glue</strong></p>
+<p>在 godot 目录下输入以下命令。</p>
+<p>该命令将指示 Godot 在 <code>godot/modules/mono/glue/GodotSharp/GodotSharp/Generated</code> 目录下生成 Godot API 的 C# 绑定文件，并在 <code>godot/modules/mono/glue/GodotSharp/GodotSharpEditor/Generated</code> 目录下生成编辑器工具的 C# 绑定文件。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">bin/godot.windows.editor.x86_64.mono --headless --generate-mono-glue modules/mono/glue</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用python脚本依照glue生成托管库</strong></p>
+<p>生成 <code>.NET glue</code> 后，可以使用脚本生成托管库。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">python3 ./modules/mono/build_scripts/build_assemblies.py --godot-output-dir=./bin</span><br></pre></td></tr></table></figure>
+
+<p>命令执行后，<code>bin/</code> 目录下应该会生成出一个 <code>GodotSharp</code> 目录。</p>
+<p>有了它，godot mono 就可以使用 c# 开发项目了。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">godot</span><br><span class="line">└─bin</span><br><span class="line">  └─GodotSharp/</span><br><span class="line">  └─godot.windows.editor.x86_64.mono.console.exe</span><br><span class="line">  └─godot.windows.editor.x86_64.mono.exe</span><br><span class="line">  └─godot.windows.editor.x86_64.mono.exp</span><br><span class="line">  └─godot.windows.editor.x86_64.mono.lib</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a target="_blank" rel="noopener" href="https://scoop.sh/">Scoop</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ScoopInstaller/scoop/wiki/Using-Scoop-behind-a-proxy">Scoop Proxy</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.godotengine.org/zh-cn/4.x/contributing/development/compiling/compiling_for_windows.html">Godot Docs：Compiling for windows</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.godotengine.org/en/stable/contributing/development/compiling/compiling_with_dotnet.html">Godot Docs：Compiling with dotnet</a></p>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2024-05-11T12:00:00.000Z" itemprop="datePublished">
+              2024-05-11
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/godot/">godot</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2024 - Soryu Ryouji </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>
