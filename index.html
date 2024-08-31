@@ -76,6 +76,71 @@
     <header class="title">
       
         <h1>
+          <a href="/2024/09/01/unity_optimization_01_script/">Unity 性能优化：脚本优化</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2024-08-31T16:35:00.000Z" itemprop="datePublished">
+    2024-09-01
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/unity/">unity</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/performance/">performance</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/categories/game-development/">game development</a> }
+  </li>
+
+
+  </ul>
+  
+</div>
+
+    </header>
+    <div>
+      
+        <h2 id="使用最快的GetComponent方法"><a href="#使用最快的GetComponent方法" class="headerlink" title="使用最快的GetComponent方法"></a>使用最快的GetComponent方法</h2><p>在Unity目前的版本中有三种获取组件的方法，分别是 <code>GetComponent&lt;T&gt;</code>、<code>GetComponent(typeof(T))</code>和 <code>GetComponent(string)</code>。第一个方法比第二个方法快一点，第三个方法显著慢于其他两个方法。</p>
+<h2 id="移除空的回调定义"><a href="#移除空的回调定义" class="headerlink" title="移除空的回调定义"></a>移除空的回调定义</h2><p>Monobehaviour 组件在场景中第一次实例化时，引擎会将任何定义好的回调添加到一个函数指针列表中，并在需要的时刻调用这个列表。但这里需要注意的是，即使回调是空的，Unity也会将该回调添加到列表中，这将会在代码被调用时产生一定的额外开销，将浪费少量的CPU资源。</p>
+<p>可以使用以下正则表达式来搜索出代码中空的回调。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line"># 这里使用 Update 方法举例</span><br><span class="line">void\s*Update\s*?\(\s*?\)\s*?\n*?\(\n*?\s*?\)</span><br></pre></td></tr></table></figure>
+
+<h2 id="优化组件引用"><a href="#优化组件引用" class="headerlink" title="优化组件引用"></a>优化组件引用</h2><p>如果可以，尽量避免反复去获取相同的组件引用。</p>
+<p>例如以下方法，每次执行时都要重新获得五个组件的引用，这对于CPU而言不是很友好。如果这个方法是在 Update 里调用的，对于性能的影响还要更加严重。</p>
+<p>更好的方法是在Awake中获取这些组件的引用并保存在类中，TakeDamage方法直接调用这些引用。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">TakeDamage</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> rb = GetComponent&lt;RigidBody&gt;();</span><br><span class="line">    <span class="keyword">var</span> collider = GetComponent&lt;Collider&gt;();</span><br><span class="line">    <span class="keyword">var</span> ai = GetComponent&lt;AIController&gt;();</span><br><span class="line">    <span class="keyword">var</span> anim = GetComponent&lt;Animator&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (GetComponent&lt;Health&gt;().health &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        rb.enabled = <span class="literal">false</span>;</span><br><span class="line">        collider.enabled = <span class="literal">false</span>;</span><br><span class="line">        ai.enabled = <span class="literal">false</span>;</span><br><span class="line">        anim.SetTrigger(<span class="string">&quot;death&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="共享，而不是每个组件都单独获取数据"><a href="#共享，而不是每个组件都单独获取数据" class="headerlink" title="共享，而不是每个组件都单独获取数据"></a>共享，而不是每个组件都单独获取数据</h2><p>让多个对象共享某些计算的结果可以节省性能开销。例如读入的 Json 数据，或者是为一组 AI 计算行动路径。</p>
+        
+          <div class="more-link">
+            <a href="/2024/09/01/unity_optimization_01_script/#more">Read On »</a>
+          </div>
+        
+      
+    </div>
+</article>
+
+    </li>
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
           <a href="/2024/06/09/nova_source_code/">Nova 源码解析</a>
         </h1>
       

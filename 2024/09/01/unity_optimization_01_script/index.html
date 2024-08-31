@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Unity 性能优化：脚本优化 | Ryouji&#39;s World</title>
+  
+    <link rel="icon" href="/assets/favicon.ico">
+  
+  
+  
+  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
+  
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+<body>
+<div class="Shell">
+    <aside class='SideBar'>
+    <section class='avatar' style="background-image: url()">
+        <div class='av-pic' style="background-image: url(/assets/avatar.png)">
+        </div>
+    </section>
+    <section class='menu'>
+        <div>Ryouji&#39;s World</div>
+        
+            <div>You Can (Not) Redo</div>
+        
+        <ul>
+          
+            <a href="/" class="Btn">
+              <li>Home</li>
+            </a>  
+          
+            <a href="/archives/" class="Btn">
+              <li>Archive</li>
+            </a>  
+          
+            <a href="/tags/" class="Btn">
+              <li>Tags</li>
+            </a>  
+          
+            <a href="/categories/" class="Btn">
+              <li>Categories</li>
+            </a>  
+          
+            <a href="/about/" class="Btn">
+              <li>About</li>
+            </a>  
+          
+        </ul>
+    </section>
+    <section class="media">
+        
+            
+                <a target="_blank" rel="noopener" href="https://github.com/soryu-ryouji">
+                    <img src="/assets/github.svg" />
+                </a>
+            
+        
+    </section>
+</aside>
+
+    <div class="container">
+        <div data-pager-shell>
+            <div>
+  <article class='ContentView'>
+    <header class='PageTitle'>
+        <h1>Unity 性能优化：脚本优化</h1>
+    </header>
+
+    <section>
+      <h2 id="使用最快的GetComponent方法"><a href="#使用最快的GetComponent方法" class="headerlink" title="使用最快的GetComponent方法"></a>使用最快的GetComponent方法</h2><p>在Unity目前的版本中有三种获取组件的方法，分别是 <code>GetComponent&lt;T&gt;</code>、<code>GetComponent(typeof(T))</code>和 <code>GetComponent(string)</code>。第一个方法比第二个方法快一点，第三个方法显著慢于其他两个方法。</p>
+<h2 id="移除空的回调定义"><a href="#移除空的回调定义" class="headerlink" title="移除空的回调定义"></a>移除空的回调定义</h2><p>Monobehaviour 组件在场景中第一次实例化时，引擎会将任何定义好的回调添加到一个函数指针列表中，并在需要的时刻调用这个列表。但这里需要注意的是，即使回调是空的，Unity也会将该回调添加到列表中，这将会在代码被调用时产生一定的额外开销，将浪费少量的CPU资源。</p>
+<p>可以使用以下正则表达式来搜索出代码中空的回调。</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line"># 这里使用 Update 方法举例</span><br><span class="line">void\s*Update\s*?\(\s*?\)\s*?\n*?\(\n*?\s*?\)</span><br></pre></td></tr></table></figure>
+
+<h2 id="优化组件引用"><a href="#优化组件引用" class="headerlink" title="优化组件引用"></a>优化组件引用</h2><p>如果可以，尽量避免反复去获取相同的组件引用。</p>
+<p>例如以下方法，每次执行时都要重新获得五个组件的引用，这对于CPU而言不是很友好。如果这个方法是在 Update 里调用的，对于性能的影响还要更加严重。</p>
+<p>更好的方法是在Awake中获取这些组件的引用并保存在类中，TakeDamage方法直接调用这些引用。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">TakeDamage</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> rb = GetComponent&lt;RigidBody&gt;();</span><br><span class="line">    <span class="keyword">var</span> collider = GetComponent&lt;Collider&gt;();</span><br><span class="line">    <span class="keyword">var</span> ai = GetComponent&lt;AIController&gt;();</span><br><span class="line">    <span class="keyword">var</span> anim = GetComponent&lt;Animator&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (GetComponent&lt;Health&gt;().health &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        rb.enabled = <span class="literal">false</span>;</span><br><span class="line">        collider.enabled = <span class="literal">false</span>;</span><br><span class="line">        ai.enabled = <span class="literal">false</span>;</span><br><span class="line">        anim.SetTrigger(<span class="string">&quot;death&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="共享，而不是每个组件都单独获取数据"><a href="#共享，而不是每个组件都单独获取数据" class="headerlink" title="共享，而不是每个组件都单独获取数据"></a>共享，而不是每个组件都单独获取数据</h2><p>让多个对象共享某些计算的结果可以节省性能开销。例如读入的 Json 数据，或者是为一组 AI 计算行动路径。</p>
+<span id="more"></span>
+
+<h2 id="Update、Coroutines-和-InvokeRepeating"><a href="#Update、Coroutines-和-InvokeRepeating" class="headerlink" title="Update、Coroutines 和 InvokeRepeating"></a>Update、Coroutines 和 InvokeRepeating</h2><p>在写代码时，新人很容易犯的错误就是在Update回调中以超出需要的频率重复调用某段代码。</p>
+<p>举例来说，有一个 AI 寻路处理方法，它的功能是找出它要移动的目的地，当我们将它放入Update回调中时，它可能会占用过度的帧率预算。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Update</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    ProcessAI();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果我们想要提高游戏的性能，可以尝试减少该方法的调用频率，如果效果并没有因为调用的次数减少而变得不可接受的差，那么这部分的性能我们就节省了下来。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="built_in">float</span> m_AirProcessDelay = <span class="number">0.2f</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="built_in">float</span> m_Timer = <span class="number">0.01f</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Update</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    m_Timer += Time.deltaTime;</span><br><span class="line">    <span class="keyword">if</span> (m_Timer &gt; m_AirProcessDelay)</span><br><span class="line">    &#123;</span><br><span class="line">        ProcessAI();</span><br><span class="line">        m_timer -= m_AirProcessDelay;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当然，我们也可以采用协程的方式编写该代码，这样可以让我们更简单的延迟调用。</p>
+<p>使用协程的主要好处是，它的调用频率完全由开发控制，在时间没到之前它将一直处于空闲状态，从而减少对大多数帧的性能影响。</p>
+<p>但协程与标准的方法调用相比，启用协程会带来额外的开销成本（大约是标准的方法调用的三倍），而且还会需要额外的内存来存储方法的执行状态。</p>
+<p>因此如果使用协程，需要确保降低频率的好处大于此成本。</p>
+<blockquote>
+<p>Note:</p>
+<p>一旦初始化，协程的运行独立于 MonoBehaviour 组件中 Update回调的出发，不管组件是否禁用，都将继续调用协程。因此如果执行大量的GameObject构建和析构操作，协程可能会显得很笨拙。</p>
+<p>当包含了协程的 GameObject 变为不活动时，在该 GameObject 身上运行的协程将全部终止。</p>
+</blockquote>
+<p>如果协程的调用可以被简化为一个 while 循环，则可以考虑使用 <code>InvokeRepeating</code> 代替，它的建立更加简单，并且开销更小。</p>
+<blockquote>
+<p>Note:</p>
+<p>InvokeRepeating 和协程之间的一个重要区别是，InvokeRepeating 完全独立于 MonoBehaviour 和 GameObject 的状态，关闭组件或者让 GameObject 失活都无法停止 InvokeRepeating 。如果想要停止 InvokeRepeating ，有两种方法。</p>
+<ol>
+<li>调用 CancelInvoke：它将停止由给定的 Monobehaviour 发起的所有 InvokeRepeating</li>
+<li>销毁 Monobehaviour 或者其 GameObject。</li>
+</ol>
+</blockquote>
+<h2 id="优化空引用检查"><a href="#优化空引用检查" class="headerlink" title="优化空引用检查"></a>优化空引用检查</h2><p>GameObject 和 Monobehaviour 是特殊的对象，它同时存在于 托管代码 与 本机代码 中，数据会在这两个内存空间中移动，每次移动都将导致额外的 CPU 开销和可能的额外内存分配。</p>
+<p>这种效果通常被称为跨越本机-托管的桥接，发生时有时候会触发 GC，许多方法都会意外地触发这种额外的开销，对 GameObject 的空引用检查就是其中之一。</p>
+<p>可以使用 <code>System.Object.ReferenceEqual</code> 方法避免这种情况，它的功能与常见的判空相同，同时运行速度是原本的两倍。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (gameObject != <span class="literal">null</span>)</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!System.Object.ReferenceEqual(gameObject, <span class="literal">null</span>))</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="避免从-GameObject-中检索字符串属性"><a href="#避免从-GameObject-中检索字符串属性" class="headerlink" title="避免从 GameObject 中检索字符串属性"></a>避免从 GameObject 中检索字符串属性</h2><p>从对象中检索字符串属性本应不增加内存成本，但是从 GameObject 中检索字符串属性会触发跨越本机-托管的桥接。</p>
+<p>GameObject 的 name 属性和 tag 属性都受此影响，因此最好只在性能无关紧要的地方使用它们。</p>
+<p>如果非要使用，对于 tag 属性而言，最好使用 CompareTag 方法。这是 GameObject 提供的比较方法，它可以避免跨越本机-托管的桥接。</p>
+<blockquote>
+<p>直接使用字符串 比较 tag 属性 1000w 次需要 2000ms，并需要 400ms 进行垃圾回收，总共是 2400ms。</p>
+<p>使用 CompareTag 比较 1000w 次仅需要 1000ms，并且不需要进行垃圾回收。</p>
+<p>Tip：向 CompareTag 传递字符串文本时不会导致运行时的内存分配，因为硬编码的字符串将在应用程序初始化时被分配，运行时只是引用它们。</p>
+</blockquote>
+<h2 id="避免在运行时修改-Transform-的父节点"><a href="#避免在运行时修改-Transform-的父节点" class="headerlink" title="避免在运行时修改 Transform 的父节点"></a>避免在运行时修改 Transform 的父节点</h2><p>Unity中，共享父元素的 Transform  按顺序存储在预先分配的内存缓冲区的内存中，并在 Hierarchy 窗口中根据父元素下面的深度进行排序。</p>
+<p>这种数据结构允许在整个组中进行更快的迭代，这对于物理和动画等多个子系统非常有用。</p>
+<p>但是缺点是，如果将一个 GameObject 的父对象指定为另一个对象，父对象必须将新的子对象放入预先分配的内存缓冲区中，并根据新的深度对所有这些 Transform 进行排序。如果缓冲区没有足够的空间，还必须扩展缓冲区，以便以深度优先的顺序容纳新的子对象及其所有的子对象。如果 GameObject 的结构比较复杂，那么该操作需要耗费一些时间来完成。</p>
+<p>当然，也可以提前给 Transform 分配一个更大的缓冲区，这样就可以避免在运行时扩展缓冲区，减少不必要的内存分配。</p>
+<h2 id="避免在运行时使用-Find-和-SendMessage-方法"><a href="#避免在运行时使用-Find-和-SendMessage-方法" class="headerlink" title="避免在运行时使用 Find 和 SendMessage 方法"></a>避免在运行时使用 Find 和 SendMessage 方法</h2><p>GameObject.Find 方法和 SendMessage 方法的开销非常大，应该不惜一切代价避免在运行时使用。</p>
+<h2 id="禁用未使用的脚本和对象"><a href="#禁用未使用的脚本和对象" class="headerlink" title="禁用未使用的脚本和对象"></a>禁用未使用的脚本和对象</h2><p>在构建大型的、开放的游戏时，如果每个游戏对象的脚本都要实时被调用，那么对性能造成的影响将是毁灭性的。许多的游戏对象都在玩家的视野之外，对于玩家的游玩没有任何的影响，反而会拖累游戏性能，因此在不需要的时候，暂时将它们关掉或许是更好的选择。</p>
+<p><strong>通过可见性禁用对象</strong></p>
+<p>为游戏对象的脚本上添加 OnBecameVisible 和 OnBecameInvisible 的回调。</p>
+<blockquote>
+<p> Note: 可见性回调必须与渲染管线通信，因此 GameObject 必须附加一个可渲染的组件，也必须保证希望接受可见性回调的组件也与可渲染对象连接在同一个 GameObject 上。</p>
+</blockquote>
+<p><strong>通过距离禁用对象</strong></p>
+<p>简单的实现是使用一个协程定期检查 玩家与当前游戏物体的距离。</p>
+<h2 id="使用距离的平方而不是距离"><a href="#使用距离的平方而不是距离" class="headerlink" title="使用距离的平方而不是距离"></a>使用距离的平方而不是距离</h2><p>CPU 比较擅长浮点数相乘而不擅长计算平方根，而每次使用 <code>magnitude</code> 属性或者 <code>Distance</code> 方法要求 Vector3 计算距离时，其实都是在进行平方根运算，这会消耗大量的 CPU 资源。</p>
+<p>更好的方案是使用距离的平方来判断游戏对象之间的距离，Vector3 也提供了 <code>sqrMagnitude</code> 属性，该值便是距离的平方。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 使用距离</span></span><br><span class="line"><span class="built_in">float</span> distance = (transform.position - other.tranform.position).Distance();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (distance &lt; targetDistance)</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用距离的平方</span></span><br><span class="line"><span class="built_in">float</span> distance = (transform.position - other.tranform.position).sqrMagnitude;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (distance &lt; (targetDistance * targetDistance))</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Note:</p>
+<p>两个方法的结果几乎相同，只是由于浮点数本身的特性，可能会损失小数点很多位之后的一点点精度。当我们不需要如此精确的精度时，损失一点点的精度换取更高的性能是可以接受的。</p>
+</blockquote>
+<h2 id="平衡CPU使用率"><a href="#平衡CPU使用率" class="headerlink" title="平衡CPU使用率"></a>平衡CPU使用率</h2><p>当有许多的 Monobehaviour 脚本在开始场景一起被初始化，一起启动了协程，每隔 500ms 处理一次 AI 任务时，它们极有可能在同一帧触发，导致 CPU 的使用率在一段时间内出现一个巨大的峰值。</p>
+<p>解决方案有如下三种：</p>
+<ol>
+<li>每次计时器过期或协程触发时，生成一个随机的等待时间</li>
+<li>将协程的初始化分散到各个帧中，这样每帧中只会启动少量的协程初始化</li>
+<li>将调用更新的职责传递给某个 God 类，该类对每帧的调用数量进行限制</li>
+</ol>
+<p>当然，需要警惕的是，剧烈的设计变更可能带来许多危险和意想不到的副作用。</p>
+<h2 id="重写-Update"><a href="#重写-Update" class="headerlink" title="重写 Update"></a>重写 Update</h2><p>优化的一个好的方法是根本不使用 Update，或者更准确地说，只使用一次。</p>
+<p>当 Unity 调用如 Update 的函数回调时，它都要经过跨越本机-托管的桥接，这会造成一定的性能损耗，如果场景中的游戏对象较多，那么耗费在这个过程中的损耗将是一个相当惊人的数字。执行一千个单独的 Update 回调的成本比执行一个 Update 的回调调用一千个常规方法的成本高。</p>
+<p>因此，让一个 God 类的 Monobehaviour 使用它自己的 Update 回调来调用自定义组件使用的自定义更新样式来更新系统，可以最小化 Update 需要跨越桥接的频率。</p>
+
+
+      
+
+    </section>
+    
+      <section class='ArticleMeta'>
+          <div>
+            发布于&nbsp;
+            <time datetime="2024-08-31T16:35:00.000Z" itemprop="datePublished">
+              2024-09-01
+            </time>
+          </div>
+          
+            <div>
+              tags: 
+  <li class="meta-text">
+  { <a href="/tags/unity/">unity</a> }
+  </li>
+
+  <li class="meta-text">
+  { <a href="/tags/performance/">performance</a> }
+  </li>
+
+
+            </div>
+          
+      </section>
+    
+    
+</article>
+
+  
+</div>
+
+            <footer>
+    <div>© 2024 - Soryu Ryouji </div>
+    <div>
+        <span>
+            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
+        </span>
+        ,
+        <span>
+            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
+        </span>
+    </div>
+</footer>
+
+        </div>
+    </div>
+</div>
+
+<script src="/js/pager/dist/singlepager.js"></script>
+
+<script>
+var sp = new Pager('data-pager-shell')
+
+</script>
+</body>
+</html>
