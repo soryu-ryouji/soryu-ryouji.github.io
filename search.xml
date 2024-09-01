@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>Unity 性能优化：界面优化</title>
+      <link href="/2024/09/01/unity_optimization_01_ui/"/>
+      <url>/2024/09/01/unity_optimization_01_ui/</url>
+      
+        <content type="html"><![CDATA[<h2 id="拆分画布"><a href="#拆分画布" class="headerlink" title="拆分画布"></a>拆分画布</h2><p>画布组件的主要任务是管理在层级窗口中绘制 UI 元素的网格，并发出渲染这些元素所需的 Draw Call。另一个重要的作用是将网格合并进行批处理以降低 Draw Call 数。</p><p>当画布或其子对象发生变动时，画布需要为所有的 UI 对象重新生成网格，然后重新发送 Draw Call，这被称为画布污染（更改 UI 元素的颜色不会污染画布）。</p><p>UI 元素的改变导致 CPU 使用率大幅上升，通常是由于在单个画布中构建了过多的 UI 元素，这将导致 UI 元素更改时画布需要重新生成的网格过多。</p><p>这种情况一般都可以使用更多的画布来解决，将 UI 拆分为多个画布，将工作的负载分开，简化单个画布所需的任务。</p><h2 id="动静结合"><a href="#动静结合" class="headerlink" title="动静结合"></a>动静结合</h2><p>在拆分 UI 时，可以按照静态、偶尔动态、连续动态三个标准分离 UI 元素。</p><ul><li>静态：永远也不会改变的 UI 元素，例如背景图片。</li><li>偶尔动态：只在做出响应时更改，例如 UI 按钮。</li><li>连续动态：元素会定期更新，例如滚动的轮播图。</li></ul><h2 id="移除-Raycast-Target"><a href="#移除-Raycast-Target" class="headerlink" title="移除 Raycast Target"></a>移除 Raycast Target</h2><p>UI 元素具有 Raycast Target 选项，允许元素通过单击、触摸和其他用户的行为进行交互。当用户行为事件发生时，GraphicsRaycast 组件将执行像素到边界框检查以确定与之交互的是哪个元素。禁用不需要交互的元素的 Raycast Target 选项，就可以减少 GraphicsRaycast 所需要检查的数量，从而提高性能。</p><span id="more"></span><h2 id="不要使用-Animator"><a href="#不要使用-Animator" class="headerlink" title="不要使用 Animator"></a>不要使用 Animator</h2><p>Unity 的 Animator 组件与 UGUI 的搭配完全就是灾难，当使用 Animator 制作 UI 动画时，每一帧 Animator 都会改变 UI 元素的属性导致画布网格需要重新绘制，这将带来巨大的开销。</p><p>因此在开发中应该避免使用 Animator。</p><h2 id="正确的隐藏-UI-元素"><a href="#正确的隐藏-UI-元素" class="headerlink" title="正确的隐藏 UI 元素"></a>正确的隐藏 UI 元素</h2><p>对于 UI 元素，即使将 alpha 值设置为 0 ，也依然会被画布提交到 Draw Call，正确的做法应该是更改 UI 元素的 isActive 属性。或者是使用 CanvasGroup 组件来控制其下所有元素的 alpha 值，当 CanvasGroup 的 alpha 值被设置为 0时，将自动清除其子对象，不会发出任何的 Draw Call。</p><h2 id="使用空的-UI-Text-元素进行全屏交互"><a href="#使用空的-UI-Text-元素进行全屏交互" class="headerlink" title="使用空的 UI Text 元素进行全屏交互"></a>使用空的 UI Text 元素进行全屏交互</h2><p>在强制玩家必须处理弹出窗口才能进入下一步时，通常会激活一个很大的、透明的可交互元素覆盖整个屏幕避免玩家能够点击弹窗后面的 UI 元素。</p><p>这通常会使用 UI Image 来完成，但在弹窗不需要背景图的时候，其实可以使用一个没有定义字体、也没有填充文本的 Text 元素用于屏蔽交互。它不需要生成任何的渲染信息，性能开销相较于将 Image 的透明度调低的方案来说是非常低的。## 拆分画布</p><p>画布组件的主要任务是管理在层级窗口中绘制 UI 元素的网格，并发出渲染这些元素所需的 Draw Call。另一个重要的作用是将网格合并进行批处理以降低 Draw Call 数。</p><p>当画布或其子对象发生变动时，画布需要为所有的 UI 对象重新生成网格，然后重新发送 Draw Call，这被称为画布污染（更改 UI 元素的颜色不会污染画布）。</p><p>UI 元素的改变导致 CPU 使用率大幅上升，通常是由于在单个画布中构建了过多的 UI 元素，这将导致 UI 元素更改时画布需要重新生成的网格过多。</p><h2 id="动静结合-1"><a href="#动静结合-1" class="headerlink" title="动静结合"></a>动静结合</h2><p>这种情况一般都可以使用更多的画布来解决，将 UI 拆分为多个画布，将工作的负载分开，简化单个画布所需的任务。</p><p>在拆分 UI 时，可以按照静态、偶尔动态、连续动态三个标准分离 UI 元素。</p><ul><li>静态：永远也不会改变的 UI 元素，例如背景图片。</li><li>偶尔动态：只在做出响应时更改，例如 UI 按钮。</li><li>连续动态：元素会定期更新，例如滚动的轮播图。</li></ul><h2 id="移除-Raycast-Target-1"><a href="#移除-Raycast-Target-1" class="headerlink" title="移除 Raycast Target"></a>移除 Raycast Target</h2><p>UI 元素具有 Raycast Target 选项，允许元素通过单击、触摸和其他用户的行为进行交互。当用户行为事件发生时，GraphicsRaycast 组件将执行像素到边界框检查以确定与之交互的是哪个元素。禁用不需要交互的元素的 Raycast Target 选项，就可以减少 GraphicsRaycast 所需要检查的数量，从而提高性能。</p><h2 id="不要使用-Animator-1"><a href="#不要使用-Animator-1" class="headerlink" title="不要使用 Animator"></a>不要使用 Animator</h2><p>Unity 的 Animator 组件与 UGUI 的搭配完全就是灾难，当使用 Animator 制作 UI 动画时，每一帧 Animator 都会改变 UI 元素的属性导致画布网格需要重新绘制，这将带来巨大的开销。</p><p>因此在开发中应该避免使用 Animator。</p><h2 id="正确的隐藏-UI-元素-1"><a href="#正确的隐藏-UI-元素-1" class="headerlink" title="正确的隐藏 UI 元素"></a>正确的隐藏 UI 元素</h2><p>对于 UI 元素，即使将 alpha 值设置为 0 ，也依然会被画布提交到 Draw Call，正确的做法应该是更改 UI 元素的 isActive 属性。或者是使用 CanvasGroup 组件来控制其下所有元素的 alpha 值，当 CanvasGroup 的 alpha 值被设置为 0时，将自动清除其子对象，不会发出任何的 Draw Call。</p><h2 id="使用空的-UI-Text-元素进行全屏交互-1"><a href="#使用空的-UI-Text-元素进行全屏交互-1" class="headerlink" title="使用空的 UI Text 元素进行全屏交互"></a>使用空的 UI Text 元素进行全屏交互</h2><p>在强制玩家必须处理弹出窗口才能进入下一步时，通常会激活一个很大的、透明的可交互元素覆盖整个屏幕避免玩家能够点击弹窗后面的 UI 元素。</p><p>这通常会使用 UI Image 来完成，但在弹窗不需要背景图的时候，其实可以使用一个没有定义字体、也没有填充文本的 Text 元素用于屏蔽交互。它不需要生成任何的渲染信息，性能开销相较于将 Image 的透明度调低的方案来说是非常低的。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> game development </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> unity </tag>
+            
+            <tag> performance </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Unity 性能优化：脚本优化</title>
       <link href="/2024/09/01/unity_optimization_01_script/"/>
       <url>/2024/09/01/unity_optimization_01_script/</url>
