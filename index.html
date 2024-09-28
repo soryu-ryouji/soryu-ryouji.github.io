@@ -76,6 +76,81 @@
     <header class="title">
       
         <h1>
+          <a href="/2024/09/28/unity_extension/">Unity 编辑器拓展</a>
+        </h1>
+      
+      <div class='ListMeta'>
+  <time datetime="2024-09-28T13:00:00.000Z" itemprop="datePublished">
+    2024-09-28
+  </time>
+  
+  | 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/tags/unity/">unity</a> }
+  </li>
+
+
+  </ul>
+  
+  
+  / 
+  <ul>
+    
+  <li class="meta-text">
+  { <a href="/categories/game-development/">game development</a> }
+  </li>
+
+
+  </ul>
+  
+</div>
+
+    </header>
+    <div>
+      
+        <h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><h3 id="Editor-文件夹"><a href="#Editor-文件夹" class="headerlink" title="Editor 文件夹"></a>Editor 文件夹</h3><p>在Unity中存在特殊的几种文件夹：</p>
+<ol>
+<li>Editor</li>
+<li>Resources</li>
+<li>StreamingAssets</li>
+<li>…</li>
+</ol>
+<p>这里主要介绍Editor，这个文件夹的主要功能是 提供一个给Editor代码运行的环境，当游戏打包时不会将该环境下的代码编译打包进游戏中。编辑器启动时，在该文件夹中的代码就能开始启动了，不需要点击Play。</p>
+<p>Editor文件夹不是指某一个文件夹，而是指所有在项目工程内所有命名为Editor文件夹。即同一个工程内，可以有多个Editor文件夹，路径任意，只需要名称为Editor即可。</p>
+<p>细心的朋友能注意到，Editor与游戏逻辑代码是不同的两个Assembly。</p>
+<h4 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h4><p> <a target="_blank" rel="noopener" href="https://docs.unity3d.com/Manual/SpecialFolders.html">Unity文档: 特殊文件夹</a></p>
+<h3 id="MenuItem"><a href="#MenuItem" class="headerlink" title="MenuItem"></a>MenuItem</h3><p><code>MenuItem</code> 属性用于向主菜单和监视面板上下文菜单中添加菜单项，它能够将任何静态函数转变为菜单命令。</p>
+<p><strong>Example</strong></p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MenuItemExample</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;EditorExtension/Menu/Hello Unity&quot;</span>)</span>]</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">HelloUnity</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Hello Unity&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;EditorExtension/Menu/Open Bilibili&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">OpenBilibili</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Application.OpenURL(<span class="string">&quot;https://bilibili.com&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>[MenuItem(&quot;EditorExtension/Menu/Hello Unity&quot;)]</code>，这个 <code>Attribute</code> 需要引用 <code>UnityEditor</code> 的命名空间。用于拓展Unity的菜单栏。</p>
+<p><code>EditorExtension/Menu/Hello Unity</code>是菜单的路径，也可以添加到默认的菜单中如 <code>Component/UnitEditor</code></p>
+<p><code>public static void HelloUnity()</code>为点击该选项后的调用函数，需注意的是函数必须是静态的。</p>
+<h4 id="Function-RevealFinder"><a href="#Function-RevealFinder" class="headerlink" title="Function: RevealFinder"></a>Function: RevealFinder</h4><p><code>RevealFinder()</code>: 打开特定文件目录</p>
+<p><strong>Example</strong></p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">[<span class="meta">MenuItem(<span class="string">&quot;EditorExtension/Menu/Open PersistentDataPath&quot;</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">OpenPersistentDataPath</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    EditorUtility.RevealFinder(Application.persistentDataPath);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[<span class="meta">MenuItem(<span class="string">&quot;EditorExtension/Menu/Open DesignerFolder&quot;</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">OpenDesignerFolder</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">	EditorUtility.RevealFinder(Application.dataPath.Replace(<span class="string">&quot;Assets&quot;</span>, <span class="string">&quot;Library&quot;</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Function-SetChecked"><a href="#Function-SetChecked" class="headerlink" title="Function: SetChecked"></a>Function: SetChecked</h4><p><code>SetChecked</code>: 为 MenuItem 提供勾选功能</p>
+<p><strong>Example</strong></p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">bool</span> m_OpenShotCut = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">[<span class="meta">MenuItem(<span class="string">&quot;EditorExtension/Menu/Toggle ShotCut&quot;</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ToggleShotCut</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    m_OpenShotCut = !m_OpenShotCut;</span><br><span class="line"></span><br><span class="line">    Menu.SetChecked(<span class="string">&quot;EditorExtension/Menu/Toggle ShotCut&quot;</span>, m_OpenShotCut);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
+          <div class="more-link">
+            <a href="/2024/09/28/unity_extension/#more">Read On »</a>
+          </div>
+        
+      
+    </div>
+</article>
+
+    </li>
+  
+    <li>
+      <article class='ListView'>
+    <header class="title">
+      
+        <h1>
           <a href="/2024/09/01/unity_optimization_01_ui/">Unity 性能优化：界面优化</a>
         </h1>
       
