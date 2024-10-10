@@ -110,31 +110,22 @@
     </header>
     <div>
       
-        <h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><h3 id="Editor-文件夹"><a href="#Editor-文件夹" class="headerlink" title="Editor 文件夹"></a>Editor 文件夹</h3><p>在Unity中存在特殊的几种文件夹：</p>
+        <h2 id="编辑器开发基础"><a href="#编辑器开发基础" class="headerlink" title="编辑器开发基础"></a>编辑器开发基础</h2><p>在Unity中存在特殊的几种文件夹：</p>
 <ol>
 <li>Editor</li>
 <li>Resources</li>
 <li>StreamingAssets</li>
 <li>…</li>
 </ol>
-<p>这里主要介绍Editor，这个文件夹的主要功能是 提供一个给Editor代码运行的环境，当游戏打包时不会将该环境下的代码编译打包进游戏中。编辑器启动时，在该文件夹中的代码就能开始启动了，不需要点击Play。</p>
-<p>Editor文件夹不是指某一个文件夹，而是指所有在项目工程内所有命名为Editor文件夹。即同一个工程内，可以有多个Editor文件夹，路径任意，只需要名称为Editor即可。</p>
-<p>细心的朋友能注意到，Editor与游戏逻辑代码是不同的两个Assembly。</p>
-<h4 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h4><p> <a target="_blank" rel="noopener" href="https://docs.unity3d.com/Manual/SpecialFolders.html">Unity文档: 特殊文件夹</a></p>
-<h3 id="MenuItem"><a href="#MenuItem" class="headerlink" title="MenuItem"></a>MenuItem</h3><p><code>MenuItem</code> 属性用于向主菜单和监视面板上下文菜单中添加菜单项，它能够将任何静态函数转变为菜单命令。</p>
-<p><strong>Example</strong></p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> UnityEditor;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MenuItemExample</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;EditorExtension/Menu/Hello Unity&quot;</span>)</span>]</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">HelloUnity</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.Log(<span class="string">&quot;Hello Unity&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [<span class="meta">MenuItem(<span class="string">&quot;EditorExtension/Menu/Open Bilibili&quot;</span>)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">OpenBilibili</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Application.OpenURL(<span class="string">&quot;https://bilibili.com&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><code>[MenuItem(&quot;EditorExtension/Menu/Hello Unity&quot;)]</code>，这个 <code>Attribute</code> 需要引用 <code>UnityEditor</code> 的命名空间。用于拓展Unity的菜单栏。</p>
-<p><code>EditorExtension/Menu/Hello Unity</code>是菜单的路径，也可以添加到默认的菜单中如 <code>Component/UnitEditor</code></p>
-<p><code>public static void HelloUnity()</code>为点击该选项后的调用函数，需注意的是函数必须是静态的。</p>
-<h4 id="Function-RevealFinder"><a href="#Function-RevealFinder" class="headerlink" title="Function: RevealFinder"></a>Function: RevealFinder</h4><p><code>RevealFinder()</code>: 打开特定文件目录</p>
-<p><strong>Example</strong></p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line">[<span class="meta">MenuItem(<span class="string">&quot;EditorExtension/Menu/Open PersistentDataPath&quot;</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">OpenPersistentDataPath</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    EditorUtility.RevealFinder(Application.persistentDataPath);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[<span class="meta">MenuItem(<span class="string">&quot;EditorExtension/Menu/Open DesignerFolder&quot;</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">OpenDesignerFolder</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">	EditorUtility.RevealFinder(Application.dataPath.Replace(<span class="string">&quot;Assets&quot;</span>, <span class="string">&quot;Library&quot;</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="Function-SetChecked"><a href="#Function-SetChecked" class="headerlink" title="Function: SetChecked"></a>Function: SetChecked</h4><p><code>SetChecked</code>: 为 MenuItem 提供勾选功能</p>
-<p><strong>Example</strong></p>
-<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">bool</span> m_OpenShotCut = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">[<span class="meta">MenuItem(<span class="string">&quot;EditorExtension/Menu/Toggle ShotCut&quot;</span>)</span>]</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">ToggleShotCut</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    m_OpenShotCut = !m_OpenShotCut;</span><br><span class="line"></span><br><span class="line">    Menu.SetChecked(<span class="string">&quot;EditorExtension/Menu/Toggle ShotCut&quot;</span>, m_OpenShotCut);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Editor 文件夹用于存放编辑器功能的相关脚本方便项目的开发，在该文件夹中的脚本在打包时会被排除，不会被打包进程序。因此所有的编辑器拓展代码都会被放入 <code>Editor</code> 文件夹中。</p>
+<p>开发者可以将多个 Editor 文件夹放置在 Assets 文件夹内的任何位置。例如 <code>Assets/Editor</code>文件夹或 <code>Assets/</code> 下的任意子文件夹中。</p>
+<h2 id="编辑器常用类"><a href="#编辑器常用类" class="headerlink" title="编辑器常用类"></a>编辑器常用类</h2><h3 id="Rect"><a href="#Rect" class="headerlink" title="Rect"></a>Rect</h3><p>这个类型在编辑器拓展中十分常见。它以左上角为坐标原点，X往右递增，Y往下递增</p>
+<blockquote>
+<p>A 2D Rectangle defined by X and Y position, width and height.</p>
+</blockquote>
+<h3 id="布局组件"><a href="#布局组件" class="headerlink" title="布局组件"></a>布局组件</h3><p>布局组件有两种分类方法，一种分法是按照 “是否可在游戏运行时中显示” 为标准，可以分为 <code>GUI / GUILayout</code> 和 <code>EditorGUI / EditorGUILayout</code>，另一种分法是按照</p>
+<h4 id="GUI-GUILayout"><a href="#GUI-GUILayout" class="headerlink" title="GUI &#x2F; GUILayout"></a>GUI &#x2F; GUILayout</h4><p><code>GUI / GUILayout</code> 主要是用于 Game 视图的基本 UI 信息显示与逻辑操作。</p>
+<p>偶尔的，GUILayout除了在Game视图进行部分 runtime 的逻辑操作，还会与 EditorGUILayout 配合，用于在 Editor 编辑器模式下的扩展功能。</p>
         
           <div class="more-link">
             <a href="/2024/09/28/unity_extension/#more">Read On »</a>
