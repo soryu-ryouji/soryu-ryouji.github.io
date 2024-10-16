@@ -1,266 +1,278 @@
-<!DOCTYPE html>
-<html lang="zh-cmn-Hans">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Nova 源码解析 | Ryouji&#39;s World</title>
-  
-    <link rel="icon" href="/assets/favicon.ico">
-  
-  
-  
-  <!--link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css"-->
-  
-<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github-gist.min.css">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Nova 源码解析 | Ryouji's World</title><meta name="author" content="Soryu Ryouji"><meta name="copyright" content="Soryu Ryouji"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="以下是 Nova 框架的代码统计。    Path Code    Assets\Nova 24267   Assets\Nova\CGInc 462   Assets\Nova\Lua 2889   Assets\Nova\Sources\Core\Animation 1619   Assets\Nova\Sources\Core\Collections 604   Assets\Nova\So">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nova 源码解析">
+<meta property="og:url" content="https://soryu-ryouji.cc/2024/06/09/nova_source_code/index.html">
+<meta property="og:site_name" content="Ryouji&#39;s World">
+<meta property="og:description" content="以下是 Nova 框架的代码统计。    Path Code    Assets\Nova 24267   Assets\Nova\CGInc 462   Assets\Nova\Lua 2889   Assets\Nova\Sources\Core\Animation 1619   Assets\Nova\Sources\Core\Collections 604   Assets\Nova\So">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://soryu-ryouji.cc/img/avatar.png">
+<meta property="article:published_time" content="2024-06-09T12:00:00.000Z">
+<meta property="article:modified_time" content="2024-10-16T16:58:06.979Z">
+<meta property="article:author" content="Soryu Ryouji">
+<meta property="article:tag" content="unity">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://soryu-ryouji.cc/img/avatar.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://soryu-ryouji.cc/2024/06/09/nova_source_code/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
 
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        if (name && globalFn[key][name]) return
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
   
-<link rel="stylesheet" href="/css/style.css">
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
 
-<meta name="generator" content="Hexo 7.1.1"></head>
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
 
-<body>
-<div class="Shell">
-    <aside class='SideBar'>
-    <section class='avatar' style="background-image: url()">
-        <div class='av-pic' style="background-image: url(/assets/avatar.png)">
-        </div>
-    </section>
-    <section class='menu'>
-        <div>Ryouji&#39;s World</div>
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
         
-            <div>You Can (Not) Redo</div>
-        
-        <ul>
-          
-            <a href="/" class="Btn">
-              <li>Home</li>
-            </a>  
-          
-            <a href="/archives/" class="Btn">
-              <li>Archive</li>
-            </a>  
-          
-            <a href="/tags/" class="Btn">
-              <li>Tags</li>
-            </a>  
-          
-            <a href="/categories/" class="Btn">
-              <li>Categories</li>
-            </a>  
-          
-            <a href="/about/" class="Btn">
-              <li>About</li>
-            </a>  
-          
-        </ul>
-    </section>
-    <section class="media">
-        
-            
-                <a target="_blank" rel="noopener" href="https://github.com/soryu-ryouji">
-                    <img src="/assets/github.svg" />
-                </a>
-            
-        
-    </section>
-</aside>
-
-    <div class="container">
-        <div data-pager-shell>
-            <div>
-  <article class='ContentView'>
-    <header class='PageTitle'>
-        <h1>Nova 源码解析</h1>
-    </header>
-
-    <section>
-      <table>
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Nova 源码解析',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-10-17 00:58:06'
+}</script><meta name="generator" content="Hexo 7.1.1"></head><body><div class="post" id="body-wrap"><header class="not-top-img" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"></a><a class="nav-page-title" href="/"><span class="site-name">Nova 源码解析</span></a></span><div id="menus"></div></nav></header><main class="layout" id="content-inner"><div id="post"><div id="post-info"><h1 class="post-title">Nova 源码解析</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-06-09T12:00:00.000Z" title="发表于 2024-06-09 20:00:00">2024-06-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-10-16T16:58:06.979Z" title="更新于 2024-10-17 00:58:06">2024-10-17</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/game-development/">game development</a></span></div><div class="meta-secondline"></div></div></div><article class="post-content" id="article-container"><p>以下是 Nova 框架的代码统计。</p>
+<table>
 <thead>
 <tr>
-<th align="left">path</th>
-<th align="right">files</th>
-<th align="right">code</th>
-<th align="right">comment</th>
-<th align="right">blank</th>
-<th align="right">total</th>
+<th align="left">Path</th>
+<th align="right">Code</th>
 </tr>
 </thead>
 <tbody><tr>
-<td align="left">.</td>
-<td align="right">312</td>
-<td align="right">49,225</td>
-<td align="right">2,859</td>
-<td align="right">8,490</td>
-<td align="right">60,574</td>
+<td align="left">Assets\Nova</td>
+<td align="right">24267</td>
 </tr>
 <tr>
-<td align="left">CGInc</td>
-<td align="right">2</td>
-<td align="right">367</td>
-<td align="right">5</td>
-<td align="right">69</td>
-<td align="right">441</td>
+<td align="left">Assets\Nova\CGInc</td>
+<td align="right">462</td>
 </tr>
 <tr>
-<td align="left">Editor</td>
-<td align="right">21</td>
-<td align="right">6,536</td>
-<td align="right">572</td>
-<td align="right">1,114</td>
-<td align="right">8,222</td>
+<td align="left">Assets\Nova\Lua</td>
+<td align="right">2889</td>
 </tr>
 <tr>
-<td align="left">Lua</td>
-<td align="right">25</td>
-<td align="right">2,209</td>
-<td align="right">121</td>
-<td align="right">291</td>
-<td align="right">2,621</td>
+<td align="left">Assets\Nova\Sources\Core\Animation</td>
+<td align="right">1619</td>
 </tr>
 <tr>
-<td align="left">Settings</td>
-<td align="right">2</td>
-<td align="right">246</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">246</td>
+<td align="left">Assets\Nova\Sources\Core\Collections</td>
+<td align="right">604</td>
 </tr>
 <tr>
-<td align="left">Sources</td>
-<td align="right">257</td>
-<td align="right">39,584</td>
-<td align="right">2,155</td>
-<td align="right">6,967</td>
-<td align="right">48,706</td>
+<td align="left">Assets\Nova\Sources\Core\Input</td>
+<td align="right">443</td>
 </tr>
 <tr>
-<td align="left">Sources\Core</td>
-<td align="right">82</td>
-<td align="right">8,917</td>
-<td align="right">887</td>
-<td align="right">1,706</td>
-<td align="right">11,510</td>
+<td align="left">Assets\Nova\Sources\Core\Restoration</td>
+<td align="right">2328</td>
 </tr>
 <tr>
-<td align="left">Sources\Core\Animation</td>
-<td align="right">21</td>
-<td align="right">1,248</td>
-<td align="right">65</td>
-<td align="right">229</td>
-<td align="right">1,542</td>
+<td align="left">Assets\Nova\Sources\Core\ScriptParsing</td>
+<td align="right">2902</td>
 </tr>
 <tr>
-<td align="left">Sources\Core\Collections</td>
-<td align="right">3</td>
-<td align="right">268</td>
-<td align="right">10</td>
-<td align="right">55</td>
-<td align="right">333</td>
+<td align="left">Assets\Nova\Sources\Core\VFX</td>
+<td align="right">728</td>
 </tr>
 <tr>
-<td align="left">Sources\Core\Input</td>
-<td align="right">7</td>
-<td align="right">731</td>
-<td align="right">24</td>
-<td align="right">119</td>
-<td align="right">874</td>
-</tr>
-<tr>
-<td align="left">Sources\Core\Restoration</td>
-<td align="right">18</td>
-<td align="right">1,755</td>
-<td align="right">144</td>
-<td align="right">330</td>
-<td align="right">2,229</td>
-</tr>
-<tr>
-<td align="left">Sources\Core\ScriptParsing</td>
-<td align="right">12</td>
-<td align="right">2,050</td>
-<td align="right">327</td>
-<td align="right">387</td>
-<td align="right">2,764</td>
-</tr>
-<tr>
-<td align="left">Sources\Core\VFX</td>
-<td align="right">5</td>
-<td align="right">415</td>
-<td align="right">27</td>
-<td align="right">85</td>
-<td align="right">527</td>
-</tr>
-<tr>
-<td align="left">Sources\Exceptions</td>
-<td align="right">3</td>
-<td align="right">30</td>
-<td align="right">3</td>
-<td align="right">6</td>
+<td align="left">Assets\Nova\Sources\Exceptions</td>
 <td align="right">39</td>
 </tr>
 <tr>
-<td align="left">Sources\Generate</td>
-<td align="right">1</td>
-<td align="right">769</td>
-<td align="right">1</td>
-<td align="right">6</td>
-<td align="right">776</td>
+<td align="left">Assets\Nova\Sources\Scripts\Controllers</td>
+<td align="right">1813</td>
 </tr>
 <tr>
-<td align="left">Sources\Scripts</td>
-<td align="right">111</td>
-<td align="right">9,200</td>
-<td align="right">253</td>
-<td align="right">1,814</td>
-<td align="right">11,267</td>
+<td align="left">Assets\Nova\Sources\Scripts\Graphics</td>
+<td align="right">1307</td>
 </tr>
 <tr>
-<td align="left">Sources\Scripts\Controllers</td>
-<td align="right">10</td>
-<td align="right">1,476</td>
-<td align="right">54</td>
-<td align="right">306</td>
-<td align="right">1,836</td>
+<td align="left">Assets\Nova\Sources\Scripts\UI\ButtonRing</td>
+<td align="right">379</td>
 </tr>
 <tr>
-<td align="left">Sources\Scripts\Graphics</td>
-<td align="right">3</td>
-<td align="right">236</td>
-<td align="right">16</td>
-<td align="right">48</td>
-<td align="right">300</td>
+<td align="left">Assets\Nova\Sources\Scripts\UI\Config</td>
+<td align="right">905</td>
 </tr>
 <tr>
-<td align="left">Sources\Scripts\SpriteCropping</td>
-<td align="right">3</td>
-<td align="right">35</td>
-<td align="right">1</td>
-<td align="right">8</td>
-<td align="right">44</td>
+<td align="left">Assets\Nova\Sources\Scripts\UI\Dialogue</td>
+<td align="right">1020</td>
 </tr>
 <tr>
-<td align="left">Sources\Scripts\UI</td>
-<td align="right">68</td>
-<td align="right">6,039</td>
-<td align="right">159</td>
-<td align="right">1,173</td>
-<td align="right">7,371</td>
+<td align="left">Assets\Nova\Sources\Scripts\UI\I18n</td>
+<td align="right">279</td>
 </tr>
 <tr>
-<td align="left">Sources\ThirdParty</td>
-<td align="right">60</td>
-<td align="right">20,668</td>
-<td align="right">1,011</td>
-<td align="right">3,435</td>
-<td align="right">25,114</td>
+<td align="left">Assets\Nova\Sources\Scripts\UI\ImageGallery</td>
+<td align="right">233</td>
+</tr>
+<tr>
+<td align="left">Assets\Nova\Sources\Scripts\UI\InputMapping</td>
+<td align="right">882</td>
+</tr>
+<tr>
+<td align="left">Assets\Nova\Sources\Scripts\UI\MusicGallery</td>
+<td align="right">830</td>
+</tr>
+<tr>
+<td align="left">Assets\Nova\Sources\Scripts\UI\Transition</td>
+<td align="right">555</td>
+</tr>
+<tr>
+<td align="left">Assets\Nova\Sources\Scripts\UI\Views</td>
+<td align="right">3821</td>
+</tr>
+<tr>
+<td align="left">Assets\Nova\UI\Shaders</td>
+<td align="right">229</td>
 </tr>
 </tbody></table>
-<h2 id="剧本解析器"><a href="#剧本解析器" class="headerlink" title="剧本解析器"></a>剧本解析器</h2><p><code>Sources\CoreScriptParsing</code>：2000 line</p>
+<h2 id="Lua-with-Nova"><a href="#Lua-with-Nova" class="headerlink" title="Lua with Nova"></a>Lua with Nova</h2><blockquote>
+<p>功能：lua 调用 Nova 框架组件</p>
+<p>路径：</p>
+<p><code>Nova/Sources/Core/LuaRuntime</code></p>
+<p><code>Nova/Lua</code></p>
+<p>行数：3000</p>
+</blockquote>
+<p>Nova 使用 Lua 作为剧本的脚本语言，通过让程序在运行时解释执行插入到剧本中的 lua 代码实现复杂的演出效果。</p>
+<p>Lua 通过 ToLua 框架调用 Nova 框架提供的方法，从而实现对 GameObject 的控制。</p>
+<p>为了让 Lua 能够正确调用方法，Nova 会给部分组件提供 <code>Lua Global Name</code>（例如 <code>SpriteController</code> ），这样便可以直接在 lua 中使用。</p>
+<p>Nova 的组件绑定到 lua 运行时使用的是 <code>LuaRuntime.Instance.BindObject</code> 方法，代码如下所示。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">// file: SpriteController.cs</span></span><br><span class="line"><span class="keyword">public</span> <span class="built_in">string</span> luaGlobalName;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Awake</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    gameState = Utils.FindNovaController().GameState;</span><br><span class="line">    spriteRenderer = GetComponentInChildren&lt;SpriteRenderer&gt;();</span><br><span class="line">    image = GetComponentInChildren&lt;Image&gt;();</span><br><span class="line">    <span class="keyword">if</span> (image != <span class="literal">null</span> &amp;&amp; image.sprite == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Using an empty png is not working due to unknown reason..</span></span><br><span class="line">        image.sprite = Utils.Texture2DToSprite(Utils.ClearTexture);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">this</span>.RuntimeAssert(spriteRenderer != <span class="literal">null</span> || image != <span class="literal">null</span>, <span class="string">&quot;Missing SpriteRenderer or Image.&quot;</span>);</span><br><span class="line">    defaultSprite = sprite;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(luaGlobalName))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// lua Global Name 在这里进行了绑定</span></span><br><span class="line">        LuaRuntime.Instance.BindObject(luaGlobalName, <span class="keyword">this</span>, <span class="string">&quot;_G&quot;</span>);</span><br><span class="line">        gameState.AddRestorable(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    I18n.LocaleChanged.AddListener(OnLocaleChanged);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="LuaRuntime"><a href="#LuaRuntime" class="headerlink" title="LuaRuntime"></a>LuaRuntime</h3><p>LuaRuntime 在 Nova 中负责与 ToLua 进行沟通，Nova 中的各个组件通过 LuaRuntime 调用 lua 部分代码。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> 提供 Lua 运行时的单例</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">LuaRuntime</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> LuaState lua;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> Dictionary&lt;<span class="built_in">string</span>, LuaFunction&gt; cachedLuaFunctions =</span><br><span class="line">        <span class="keyword">new</span> Dictionary&lt;<span class="built_in">string</span>, LuaFunction&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">bool</span> inited;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Init</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Reset</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        ClearCachedLuaFunctions();</span><br><span class="line">        lua.DoFile(<span class="string">&quot;requires.lua&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">CheckInit</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">this</span>.RuntimeAssert(inited, <span class="string">&quot;LuaRuntime methods should be called after Init.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 在 Lua 中使对象可见</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;remarks&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 该对象将被分配为全局变量 __Nova 或其他命名空间的一个条目、</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> Lua 脚本可以通过 __Nova[name] 访问该对象。</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/remarks&gt;</span></span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">BindObject</span>(<span class="params"><span class="built_in">string</span> name, <span class="built_in">object</span> obj, <span class="built_in">string</span> tableName = <span class="string">&quot;__Nova&quot;</span></span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">UpdateExecutionContext</span>(<span class="params">ExecutionContext executionContext</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        BindObject(<span class="string">&quot;executionContext&quot;</span>, executionContext);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 用闭包封装给定代码</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> LuaFunction 将被缓存，并在 Dispose 中被销毁</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LuaFunction <span class="title">WrapClosure</span>(<span class="params"><span class="built_in">string</span> code</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">DoString</span>(<span class="params"><span class="built_in">string</span> chunk</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        CheckInit();</span><br><span class="line">        lua.DoString(chunk);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// The LuaTable will not be cached, and the user needs to dispose it</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LuaTable <span class="title">GetTable</span>(<span class="params"><span class="built_in">string</span> name</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// The LuaFunction will be cached, and will be disposed in Dispose</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LuaFunction <span class="title">GetFunction</span>(<span class="params"><span class="built_in">string</span> name</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ClearCachedLuaFunctions</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 处置 Lua 运行时环境</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> LuaRuntime 被销毁时将调用此方法</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Dispose</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#<span class="keyword">region</span> Singleton pattern</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Codes from http://wiki.unity3d.com/index.php/Singleton</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> LuaRuntime _instance;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">readonly</span> <span class="built_in">object</span> Lock = <span class="keyword">new</span> <span class="built_in">object</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> LuaRuntime Instance</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="built_in">bool</span> ApplicationIsQuitting = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 当 Unity 退出时，它会以随机顺序销毁对象。</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 原则上，只有当应用程序退出时才会销毁单例。</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 如果任何脚本在 Instance 销毁后调用它、</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 它将创建一个有缺陷的幽灵对象，该对象将保留在编辑器场景中。</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 甚至在停止播放应用程序后也是如此。非常糟糕！</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 因此，这样做是为了确保我们不会创建一个有问题的幽灵对象。</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">OnDestroy</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        ApplicationIsQuitting = <span class="literal">true</span>;</span><br><span class="line">        Dispose();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#<span class="keyword">endregion</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>graphics.lua</code> 脚本中可以看到 Nova 是如何控制图像的显示的。</p>
+<figure class="highlight lua"><table><tr><td class="code"><pre><span class="line"><span class="comment">--- usage:</span></span><br><span class="line"><span class="comment">---     show(obj, &#x27;image_name&#x27;, [&#123;x, y, [scale, z, angle]&#125;, &#123;r, g, b, [a]&#125;, fade])</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span><span class="params">(obj, image_name, coord, color, fade)</span></span></span><br><span class="line">    <span class="comment">--- .....</span></span><br><span class="line">    <span class="keyword">local</span> _type = obj:GetType()</span><br><span class="line">    <span class="keyword">if</span> _type == typeof(Nova.PrefabLoader) <span class="keyword">then</span></span><br><span class="line">        obj:SetPrefab(image_name)</span><br><span class="line">    <span class="keyword">elseif</span> _type == typeof(Nova.SpriteController) <span class="keyword">then</span></span><br><span class="line">        obj:SetImage(image_name)</span><br><span class="line">        __Nova.imageUnlockHelper:Unlock(obj.imageFolder .. <span class="string">&#x27;/&#x27;</span> .. image_name)</span><br><span class="line">    <span class="comment">--- ......</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="剧本解析器"><a href="#剧本解析器" class="headerlink" title="剧本解析器"></a>剧本解析器</h2><blockquote>
+<p>功能：剧本解析</p>
+<p>路径：<code>Assets\Nova\Sources\Core\ScriptParsing</code></p>
+<p>行数：2902</p>
+</blockquote>
 <h3 id="Parser"><a href="#Parser" class="headerlink" title="Parser"></a>Parser</h3><p>Parser首先会创建一个Tokenizer对象负责解析剧本文件的标识符，再根据标识符将剧本文件分为若干块，如提前代码块（EagerCodeBlock）、代码块（CodeBlock）、文本块（TextBlock）、分隔块（SeparatorBlock）。</p>
 <p>解析好的块被称为ParsedScript，在游戏运行时被交给 <code>ScriptLoader</code> 进行执行。</p>
-<span id="more"></span>
-
-<pre><code class="highlight mermaid">graph TD;
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  graph TD;
 
 Start --&gt; ParseBlock
 ParseBlock --&gt; ParseEagerExectionBlock
@@ -281,10 +293,12 @@ ParseCodeBlockWithAttributes --&gt; ParseCodeBlock
 
 ParseCodeBlock --&gt; AddToBlocks[&quot;Add To Blocks&quot;]
 
-AddToBlocks --&gt; ReturnParsedScript[&quot;Return ParsedScript&quot;]</code></pre>
+AddToBlocks --&gt; ReturnParsedScript[&quot;Return ParsedScript&quot;]
+  </pre></div>
 
 <h3 id="FlowChartGraph"><a href="#FlowChartGraph" class="headerlink" title="FlowChartGraph"></a>FlowChartGraph</h3><p>在游戏启动时，ScriptLoader 将加载并解析剧情脚本以构建 FlowChartGraph，每一个 FlowChartGraph 由多个 FlowChartNode 构成，每一个 FlowChartNode 又包含有多个 DialogueEntry，当玩家点击下一步时，其实实际上就是在不断地向前加载 DialogueEntry。</p>
-<pre><code class="highlight mermaid">flowchart TD
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  flowchart TD
 
 FlowChartGraph --&gt; Node1
 FlowChartGraph --&gt; Node2
@@ -301,10 +315,155 @@ Node2 --&gt; Entry6
 
 Node3 --&gt; Entry7
 Node3 --&gt; Entry8
-Node3 --&gt; Entry9</code></pre>
+Node3 --&gt; Entry9
+  </pre></div>
 
+<h2 id="GameState"><a href="#GameState" class="headerlink" title="GameState"></a>GameState</h2><blockquote>
+<p>作用：管理游戏状态</p>
+<p>路径：Nova&#x2F;Source&#x2F;Core&#x2F;GameState</p>
+<p>行数：1212</p>
+</blockquote>
+<p>GameState 类的作用是管理游戏的状态，主要功能如下：</p>
+<ol>
+<li>管理游戏中所有可恢复组件</li>
+<li>管理游戏的状态</li>
+<li>推进游戏剧本</li>
+<li>存储和加载存档</li>
+</ol>
+<h3 id="游戏状态与-GameStateCheckpoint"><a href="#游戏状态与-GameStateCheckpoint" class="headerlink" title="游戏状态与 GameStateCheckpoint"></a>游戏状态与 GameStateCheckpoint</h3><p>游戏状态由当前剧本的行号、当前各可恢复组件的状态、当前游戏所存储的变量以及步骤限制检查点组成。</p>
+<blockquote>
+<p>之所以需要步骤限制检查点，是为了避免读档在某些难以恢复的时刻，从而导致奇怪的难以追溯的错误。</p>
+<p>举例来说，若存档的位置在某次动画演出的途中，那么存档的数据就很难被简单的复原。因此为了读档后演出能够正常进行，就需要将读档的实际位置回溯到动画过场之前。</p>
+<p>步骤限制检查点所提供的就是动画过场之前的演出脚本的行号。</p>
+</blockquote>
+<p>将这些决定了游戏状态的数据打包在一起，就构成了一个 GameStateCheckpoint。</p>
+<p>每一个 GameStateCheckpoint 都记录了当前剧本的行号、当前各可恢复组件的状态、当前游戏所存储的变量以及步骤限制检查点。以下是 GameStateCheckpoint 的实现。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">GameStateCheckpoint</span> : <span class="title">ISerializedData</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">int</span> dialogueIndex;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">readonly</span> <span class="built_in">int</span> stepsCheckpointRestrained;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">readonly</span> Dictionary&lt;<span class="built_in">string</span>, IRestoreData&gt; restoreDatas;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">readonly</span> Variables variables;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">GameStateCheckpoint</span>(<span class="params"><span class="built_in">int</span> dialogueIndex, Dictionary&lt;<span class="built_in">string</span>, IRestoreData&gt; restoreDatas,</span></span></span><br><span class="line"><span class="params"><span class="function">        Variables variables, <span class="built_in">int</span> stepsCheckpointRestrained</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">this</span>.dialogueIndex = dialogueIndex;</span><br><span class="line">        <span class="keyword">this</span>.stepsCheckpointRestrained = stepsCheckpointRestrained;</span><br><span class="line">        <span class="keyword">this</span>.restoreDatas = restoreDatas;</span><br><span class="line">        <span class="keyword">this</span>.variables = <span class="keyword">new</span> Variables();</span><br><span class="line">        <span class="keyword">this</span>.variables.CloneFrom(variables);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以下是 GameState 创建和恢复 GameStateCheckpoint 的方法。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">// file: GameState.cs</span></span><br><span class="line"></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> Get the current game state as a checkpoint</span></span><br><span class="line"><span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">private</span> GameStateCheckpoint <span class="title">GetCheckpoint</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> restoreDatas = <span class="keyword">new</span> Dictionary&lt;<span class="built_in">string</span>, IRestoreData&gt;();</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> restorable <span class="keyword">in</span> restorables)</span><br><span class="line">    &#123;</span><br><span class="line">        restoreDatas[restorable.Key] = restorable.Value.GetRestoreData();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> GameStateCheckpoint(currentIndex, restoreDatas, variables, stepsCheckpointRestrained);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">RestoreCheckpoint</span>(<span class="params">GameStateCheckpoint entry</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">this</span>.RuntimeAssert(entry != <span class="literal">null</span>, <span class="string">&quot;Checkpoint is null.&quot;</span>);</span><br><span class="line">    restoreStarts.Invoke(entry == initialCheckpoint);</span><br><span class="line"></span><br><span class="line">    currentIndex = entry.dialogueIndex;</span><br><span class="line">    stepsFromLastCheckpoint = <span class="number">0</span>;</span><br><span class="line">    stepsCheckpointRestrained = entry.stepsCheckpointRestrained;</span><br><span class="line">    checkpointEnsured = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    variables.CloneFrom(entry.variables);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> pairs = restorables.OrderByDescending(x =&gt;</span><br><span class="line">        (x.Value <span class="keyword">as</span> IPrioritizedRestorable)?.priority ?? RestorablePriority.Normal);</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> pair <span class="keyword">in</span> pairs)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (entry.restoreDatas.TryGetValue(pair.Key, <span class="keyword">out</span> <span class="keyword">var</span> data))</span><br><span class="line">        &#123;</span><br><span class="line">            pair.Value.Restore(data);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// fallback to initialCheckpoint state</span></span><br><span class="line">            pair.Value.Restore(initialCheckpoint.restoreDatas[pair.Key]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="GameState-如何推进进度"><a href="#GameState-如何推进进度" class="headerlink" title="GameState 如何推进进度"></a>GameState 如何推进进度</h3><p>游戏状态的推进同样是由 GameState 进行管理的，由 <code>Step()</code> 方法进行控制。</p>
+<p>若当前剧本没有到达末尾，则继续向前推进。若到达了末尾，则使用 <code>StepAtEndOfNode()</code> 方法判断该如何处理。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Step</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (!canStepForward)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// If the next dialogue entry is in the current node, directly step to it</span></span><br><span class="line">    <span class="keyword">if</span> (currentIndex + <span class="number">1</span> &lt; currentNode.dialogueEntryCount)</span><br><span class="line">    &#123;</span><br><span class="line">        ++currentIndex;</span><br><span class="line">        UpdateGameState(<span class="literal">false</span>, <span class="literal">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        StepAtEndOfNode();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在调用了 <code>Step()</code> 方法确定向前推进游戏状态后，<code>UpdateGameState()</code> 方法负责实际更新游戏状态。</p>
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  graph TD
+
+Step --&gt; UpdateGameState --&gt; UpdateDialogue
+
+UpdateDialogue --&gt; ExecuteAction.BeforeCheckpoint
+UpdateDialogue --&gt; ExecuteAction.Default
+UpdateDialogue --&gt; ExecuteAction.AfterDialogue
+  </pre></div>
+
+
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">UpdateGameState</span>(<span class="params"><span class="built_in">bool</span> fromCheckpoint, <span class="built_in">bool</span> nodeChanged</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (nodeChanged)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Debug.Log($&quot;Node changed to &#123;currentNode.name&#125;&quot;);</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>.nodeChanged.Invoke(<span class="keyword">new</span> NodeChangedData(nodeRecord.name));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Always get a checkpoint at the beginning of the node</span></span><br><span class="line">        checkpointEnsured = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (currentNode.dialogueEntryCount &gt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        currentDialogueEntry = currentNode.GetDialogueEntryAt(currentIndex);</span><br><span class="line">        ExecuteAction(UpdateDialogue(fromCheckpoint, nodeChanged));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        StepAtEndOfNode();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> IEnumerator <span class="title">UpdateDialogue</span>(<span class="params"><span class="built_in">bool</span> fromCheckpoint, <span class="built_in">bool</span> nodeChanged</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (!fromCheckpoint)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 如果将下面几行代码放入一个新的例行程序将引入一帧的延迟，所以不要这样做</span></span><br><span class="line">        currentDialogueEntry.ExecuteAction(DialogueActionStage.BeforeCheckpoint, isRestoring);</span><br><span class="line">        <span class="keyword">while</span> (actionPauseLock.isLocked) <span class="keyword">yield</span> <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> isReached = currentIndex &lt; nodeRecord.endDialogue;</span><br><span class="line">    DialogueSaveCheckpoint(nodeChanged, isReached);</span><br><span class="line">    <span class="comment">// 通知对话即将更改。例如角色控制器就会停止播放语音</span></span><br><span class="line">    dialogueWillChange.Invoke();</span><br><span class="line"></span><br><span class="line">    currentDialogueEntry.ExecuteAction(DialogueActionStage.Default, isRestoring);</span><br><span class="line">    <span class="keyword">while</span> (actionPauseLock.isLocked) <span class="keyword">yield</span> <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> isReachedAnyHistory = checkpointManager.IsReachedAnyHistory(currentNode.name, currentIndex);</span><br><span class="line">    <span class="keyword">var</span> dialogueData = DialogueSaveReachedData(isReachedAnyHistory);</span><br><span class="line">    <span class="keyword">var</span> dialogueChangedData = <span class="keyword">new</span> DialogueChangedData(nodeRecord, checkpointOffset, dialogueData,</span><br><span class="line">        currentDialogueEntry.GetDisplayData(), isReached, isReachedAnyHistory);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (isJumping &amp;&amp; !isReachedAnyHistory)</span><br><span class="line">    &#123;</span><br><span class="line">        isJumping = <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 通知对话已经发生了变化</span></span><br><span class="line">    dialogueChangedEarly.Invoke(dialogueChangedData);</span><br><span class="line">    dialogueChanged.Invoke(dialogueChangedData);</span><br><span class="line"></span><br><span class="line">    currentDialogueEntry.ExecuteAction(DialogueActionStage.AfterDialogue, isRestoring);</span><br><span class="line">    <span class="keyword">while</span> (actionPauseLock.isLocked) <span class="keyword">yield</span> <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="NodeRecord"><a href="#NodeRecord" class="headerlink" title="NodeRecord"></a>NodeRecord</h2><p>游戏的状态恢复可以使用 GameStateCheckpoint 实现，但如果需要实现更多的效果，例如了解玩家经过了哪些剧本节点、哪些结局达成了等需求，就很难实现了。</p>
+<p>单一的 GameStateCheckpoint 无法提供更多的信息，因此我们需要一个数据结构来专门存储玩家经过了哪些节点，这个数据结构就是 NodeRecord。</p>
+<p>所有的 NodeRecord 将组成一棵树，可以完整描述玩家的剧情流程。</p>
+<h3 id="什么时候会创建-NodeRecord"><a href="#什么时候会创建-NodeRecord" class="headerlink" title="什么时候会创建 NodeRecord"></a>什么时候会创建 NodeRecord</h3><p>每隔若干条对话，Nova 框架就会自动创建一个 NodeRecord，覆盖一个流程图节点内的若干条对话，并保存一个对话内生成的 GameStateCheckpoint 的索引。</p>
+<p>每一个 NodeRecord 的第一条对话会强制创建一个 GameStateCheckpoint，但 NodeRecord 的结尾不强制创建。</p>
+<p>当进行剧情分支跳转的时候，会创建 NodeRecord（如果跳转到同一个节点，即使是不同的分支，也不会创建新的NodeRecord）。</p>
+<p>同一个节点内也可能会产生多个NodeRecord，目前有两种情况：</p>
+<ol>
+<li>一条对话的脚本可能在相同的初始状态下产生不同的结果，比如小游戏。这时根据不同的 variablesHash 创建不同的 NodeRecord</li>
+<li>当前 NodeRecord 所覆盖的 GameStateCheckpoint 范围不处于链表末尾，但是需要添加新的 GameStateCheckpoint</li>
+</ol>
+<p>这两种情况都会调用 <code>GameState.AppendSameNode</code> 方法增加一个新的 NodeRecord 的子节点。</p>
+<h2 id="存档系统"><a href="#存档系统" class="headerlink" title="存档系统"></a>存档系统</h2><p>如果要实现一个游戏的存档和读档的功能，前提条件是能够将游戏的状态进行序列化和反序列化。</p>
+<p>Nova 的做法是为游戏中每一个会随着游戏进度变化的组件增加了序列化和反序列化接口，使用 json 数据和其他简单数据作为存储状态的媒介。</p>
+<p>存档系统中存储的数据有以下几类:</p>
+<ul>
+<li>GlobalSave：记录当前存档文件的相关信息，例如存档的时间、存档数据的存放位置等。</li>
+<li>游戏的全局变量和局部变量：例如好感度等是局部变量，而几周目、是否通关过某些结局等是全局变量。</li>
+<li>GameState：当前的游戏状态，例如当前在哪条对话、当前游戏前端组件的状态等。</li>
+</ul>
+<p>GlobalSave 和 游戏的变量比较好处理，但是序列化与反序列化 GameState 比较困难，尤其是当需要考虑存读档系统的性能问题时。</p>
+<h3 id="可恢复组件"><a href="#可恢复组件" class="headerlink" title="可恢复组件"></a>可恢复组件</h3><p>为了解决序列化和反序列化的问题，Nova 引入了 <code>IRestoreData</code> 和 <code>IRestorable</code> 两个接口，分别用于可恢复数据与可恢复组件。通过 <code>IRestoreData</code> 与 <code>IRestorable</code> 相互配合，我们就可以将游戏状态恢复到任意的时刻。</p>
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  classDiagram
+
+class ISerializedData {
+	&lt;&lt;interface&gt;&gt;
+}
+
+class IRestoreData {
+	&lt;&lt;interface&gt;&gt;
+}
+
+IRestoreData --&gt; ISerializedData
+AutoVoiceRestoreData --&gt; IRestoreData
+AudioControllerRestoreData --&gt; IRestoreData
+LogControllerRestoreData --&gt; IRestoreData
+  </pre></div>
+
+<center>IRestoreData 类图</center>
+
+
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  classDiagram
+
+class IRestorable {
+	&lt;&lt;interface&gt;&gt;
+	- string restorableName
+	- GetRestoreData() IRestoreData
+	- Restore(IRestoreData restoreData) void
+}
+
+AutoVoice --&gt; IRestorable
+AudioController --&gt; IRestorable
+CameraController --&gt; IRestorable
+MeshController --&gt; IRestorable
+  </pre></div>
+
+<center>IRestorable 类图</center>
+
+<p>单一组件的数据恢复问题解决了，接下来就需要解决如何让所有需要存档的组件统一存档。</p>
+<p>计算机领域有一句戏言：”All problems in computer science can be solved by another level of indirection。”（计算机科学中的每个问题都可以用一间接层解决）。</p>
+<p>在面对这种让数据统一进行某种操作时，我们的第一反应是将这些数据放在某处进行集中管理，事实上 Nova 也是如此做的，这个管理游戏所有数据的层级就是 GameState。</p>
+<p>在场景初始化的时候，可恢复组件会将自身注册进 <code>GameState.restorables</code>，具体实现可以参考 AutoVoice 的例子。</p>
+<figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">// file: GameState.cs</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">readonly</span> Dictionary&lt;<span class="built_in">string</span>, IRestorable&gt; restorables =</span><br><span class="line">    <span class="keyword">new</span> Dictionary&lt;<span class="built_in">string</span>, IRestorable&gt;();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">AddRestorable</span>(<span class="params">IRestorable restorable</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">        restorables.Add(restorable.restorableName, restorable);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (ArgumentException e)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ArgumentException(</span><br><span class="line">            <span class="string">&quot;Nova: A restorable should have an unique and non-null name.&quot;</span>, e</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">RemoveRestorable</span>(<span class="params">IRestorable restorable</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    restorables.Remove(restorable.restorableName);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// file: AutoVoice.cs</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Awake</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    gameState = Utils.FindNovaController().GameState;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> config <span class="keyword">in</span> autoVoiceConfigs)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> name = config.characterName;</span><br><span class="line">        nameToConfig[name] = config;</span><br><span class="line">        nameToEnabled[name] = <span class="literal">false</span>;</span><br><span class="line">        nameToIndex[name] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">string</span>.IsNullOrEmpty(luaName))</span><br><span class="line">    &#123;</span><br><span class="line">        LuaRuntime.Instance.BindObject(luaName, <span class="keyword">this</span>);</span><br><span class="line">        <span class="comment">// 将自身添加进 restorables 中</span></span><br><span class="line">        gameState.AddRestorable(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Nova 自带有十六个的可恢复组件，如下所示。</p>
+<ol>
+<li>AssetLoader：用于在运行时加载资产并管理预加载的资产</li>
+<li>PostProcessing：用于进行后处理</li>
+<li>AutoVoice：用于管理游戏中角色的自动语音播放配置</li>
+<li>AudioController：用于控制游戏中的音频播放</li>
+<li>AvatarController：用于控制角色的头像渲染</li>
+<li>CameraController：用于控制角色摄像机</li>
+<li>MeshController：用于控制MeshRender组件</li>
+<li>PrefabLoader：用于动态加载和管理游戏对象预制件</li>
+<li>RawImageController：用于控制原始图像组件</li>
+<li>SpriteController：用于控制图像组件</li>
+<li>VideoController：用于控制视频播放</li>
+<li>OverlaySpriteController：用于覆盖其他图层显示图像，GameCharacterController 继承并拓展了该组件</li>
+<li>GameViewInput：用于管理视觉小说游戏中用户输入</li>
+<li>DialogueBoxController：用于控制文本框组件</li>
+<li>GameViewController：用于管理游戏中的 UI</li>
+<li>LogController：用于显示剧本对话记录</li>
+</ol>
+<h3 id="GameStateCheckpoint-与-CheckpointBlock"><a href="#GameStateCheckpoint-与-CheckpointBlock" class="headerlink" title="GameStateCheckpoint 与 CheckpointBlock"></a>GameStateCheckpoint 与 CheckpointBlock</h3><p>在 GameState 章节中我们知道了游戏是通过保存和恢复 GameStateCheckpoint 实现的存档与读档，而这一小结，我们需要去了解 GameStateCheckpoint 是如何被存储到硬盘上，又是如何从硬盘中读取出来。</p>
+<h4 id="CheckpointBlock-与-Record"><a href="#CheckpointBlock-与-Record" class="headerlink" title="CheckpointBlock 与 Record"></a>CheckpointBlock 与 Record</h4><p>查找文件数据有两种方式，一种方式是当需要某个数据时，将该数据全部读入内存中进行查找，这样是最简单的方式，但在数据量很大的情况下，将数据读入，再将数据反写回硬盘会消耗大量的时间。</p>
+<p>另一种方式是提前算出数据存放的位置，然后只读取该数据的所在位置。这样做的速度是最快的，但需要提前规划好数据的存储方式。</p>
+<p>Nova 所采取的就是第二种方式，框架将存档中的数据分为若干个小块，每一个小块的大小为 4KB，这个小块就被称为 CheckpointBlock（GameStateCheckpoint 与 CheckpointBlock 是两个东西，注意区分）。</p>
+<p>但是只有 CheckpointBlock 对存档进行分块还是不够，我们还需要提供将数据合理写入存档的方法。</p>
+<p>Nova 框架中，提供数据写入与读取功能的脚本叫作 <code>CheckpointSerializer.cs</code>，它提供了 <code>AppendRecord</code> 方法将数据写入到存档最末尾的 CheckpointBlock 中。</p>
+<p>需要注意的是，不存在名叫 Record 的数据结构，只是在习惯上，我们将不定长的数据称为 Record，这与我们之后将要提到的 NodeRecord 并不是同一个事物。</p>
+<p>以下是Nova的存档文件的数据分布示意图。</p>
+<p><img src="/./assets/global.nsav-phy.svg" alt="global.nsav-phy"></p>
+<center>global.nsav 存档示意图</center>
+
+<p>第一个CheckpointBlock 开头的 <code>header</code>, 用于标示该文件是 Nova 框架的存档文件，<code>version</code> 则标示该存档文件的版本号，<code>id</code> 存储当前处于哪一个 CheckpointBlock，通过它我们就可以很轻松的获得特定的 CheckpointBlock 。</p>
+<p>例如当我们需要读取第六块 CheckpointBlock 的数据时，只需要将 id 序号与 CheckpointBlock 的大小相乘就可以得出数据的偏移量，然后读取该偏移量之后的一个 CheckpointBlock 大小的数据即可。</p>
+<p>每次写入一条 Record，该 Record 都会在开头放置一个 int 类型的数据提示自己占据多少个字节，然后将数据放入之后的区域。当读取存档的时候，即可通过该特性来读取特定的 Record。</p>
+<p>如果一个 Rcord 的数据没有办法被当前的 CheckpointBlock 完整的存储，如 Record F 所示，那么存档系统会自动扩充一个新的 CheckpointBlock，让 Record 存储完剩下的数据。而在读取的时候，存档系统也会自动判断当前 Record 的数据是否被全部读出，如果当前 CheckpointBlock 中已经没有数据了，那么存档系统将自动去下一个 CheckpointBlock 中读取剩余的数据。</p>
 <h2 id="演出控制"><a href="#演出控制" class="headerlink" title="演出控制"></a>演出控制</h2><p>Nova通过GameViewInput获取玩家的输入，然后顺序调用一系列管理器，最终更新界面显示。</p>
-<pre><code class="highlight mermaid">flowchart LR
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  flowchart LR
 
 subgraph &quot;InputCheck&quot;
 	ClickForward(&quot;GameViewInput.ClickForward()&quot;)
@@ -328,7 +487,8 @@ subgraph &quot;DialogueEntry&quot;
 
 	DialogueEntry.ExecuteAction(&quot;DialogueEntry.ExecuteAction()&quot;)
 	--&gt; DialogueEntry.action.Call(&quot;DialogueEntry.action.Call()&quot;)
-end</code></pre>
+end
+  </pre></div>
 
 <h3 id="VFX"><a href="#VFX" class="headerlink" title="VFX"></a>VFX</h3><p>Nova的图像特效，例如淡入淡出等，都是通过VFX实现的，以下我们就将对Nova的VFX系统的代码进行分析。</p>
 <h4 id="lua-function-vfx"><a href="#lua-function-vfx" class="headerlink" title="lua function - vfx"></a>lua function - vfx</h4><p>在影视制作中，在真人动作镜头之外创造或操纵图像的过程被称为VFX（Visual effects）。利用影片和电脑生成的图像或影像合成，来创造一个看起来真实的效果或场景。而在视觉小说中，往往是指为图像添加某些视觉效果。</p>
@@ -366,7 +526,8 @@ end</code></pre>
 
 <h2 id="多语言支持"><a href="#多语言支持" class="headerlink" title="多语言支持"></a>多语言支持</h2><p>Nova 的 I18n 可以分为 UI 的 I18n 与剧本的 I18n，需要分别进行讨论。</p>
 <h3 id="I18n-UI"><a href="#I18n-UI" class="headerlink" title="I18n UI"></a>I18n UI</h3><h4 id="I18nText-I18nImage"><a href="#I18nText-I18nImage" class="headerlink" title="I18nText &amp; I18nImage"></a>I18nText &amp; I18nImage</h4><p>UI组件的I18n支持比较简单，在初始化或者I18n更改事件发生时，通过 <code>inflateKey</code> 读取多语言文件中的对应的 <code>value</code> 并更新显示。</p>
-<pre><code class="highlight mermaid">flowchart TD
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  flowchart TD
 
 I18nComponentInit(&quot;I18n Component Init&quot;)
 
@@ -378,14 +539,42 @@ LoadTranslationBundles(&quot;Load I18n Res&quot;)
 --&gt; ReturnInflateResources(&quot;Return Inflate Key Res&quot;)
 end
 
-I18n --&gt; UpdateI18nComponent(&quot;I18nXXX.UpdateXXX&quot;)</code></pre>
+I18n --&gt; UpdateI18nComponent(&quot;I18nXXX.UpdateXXX&quot;)
+  </pre></div>
 
 <h3 id="I18n-Scenarios"><a href="#I18n-Scenarios" class="headerlink" title="I18n Scenarios"></a>I18n Scenarios</h3><p>在Nova中，剧本的多语言采用的是逐行对照的方式，当需要加载某个语言的多语言设置时，系统将尝试读取对应语言的对应章节的对应行。</p>
-<h2 id="动画系统"><a href="#动画系统" class="headerlink" title="动画系统"></a>动画系统</h2><p>动画系统有 c# 代码中的部分和 lua 中的部分，c# 中主要依靠NovaAnimation与AnimationEntry 两个组件进行控制，而<code>animation.lua</code> 中的内容，主要是对 c# 中的代码进行一层包装，为了方便处理一些参数的默认值。</p>
-<p><code>make_anim_method</code> 它会把一个函数添加到 <code>NovaAnimation</code>和 <code>AnimationEntry</code> 的 <code>metatable</code>，这样就可以当<code>method</code>来用。</p>
-<p>我们在演出脚本里写 <code>anim:move(xxx)</code> 的时候，其实<code> anim</code> 是 <code>NovaAnimation</code> 的一个实例，<code>move</code> 是它的<code>method</code>，返回的是一个<code>AnimationEntry</code>，所以写<code>anim:move(xxx):tint(xxx)</code>的时候，<code>tint</code>就是<code>AnimationEntry</code>的<code>method</code></p>
-<p>Nova要保证<code>move</code>之类的函数不管前面是<code>NovaAnimation</code>还是<code>AnimationEntry</code>都能用，所以写了一个<code>make_anim_method</code> 来把它同时添加到两个类</p>
-<h2 id="输入系统"><a href="#输入系统" class="headerlink" title="输入系统"></a>输入系统</h2><h2 id="存档系统"><a href="#存档系统" class="headerlink" title="存档系统"></a>存档系统</h2><p><a target="_blank" rel="noopener" href="https://github.com/Lunatic-Works/Nova/wiki/Restoration">Nova Wiki: Restoration</a></p>
+<h2 id="动画系统"><a href="#动画系统" class="headerlink" title="动画系统"></a>动画系统</h2><p>Nova 的动画组件放在了 NovaController 这个预置体的 NovaAnimation 对象下，分别有一个专门的对象挂载了 NovaAnimation脚本。其中 <code>AnimationType.PerDialogue</code> 和 <code>AnimationType.Holding</code>  使用 BindAnimation 脚本绑定给 lua 进行调用。</p>
+<p>动画系统主要的脚本如下：</p>
+<ul>
+<li><p>NovaAnimation：针对不同类型的动画进行管理，支持动画的播放、暂停、停止等功能。</p>
+</li>
+<li><p>AnimationEntry：用于控制动画片段的播放、暂停、停止和重复播放，并且可以链接多个动画组成动画链。</p>
+</li>
+</ul>
+<p>其他脚本：</p>
+<ul>
+<li>ActionAnimationProperty：Action将在指定的重复次数内调用，每帧一次。</li>
+<li>AnchorAnimationProperty：用于操作 UI 元素锚点，动画化 UI 元素在 Unity 中的锚点位置。</li>
+<li>CameraSizeAnimationProperty：用于控制 CameraController 中相机的 size 属性。</li>
+<li>ColorAnimationProperty：用于控制各种 UI 元素或游戏对象的颜色变化，允许颜色在一段时间内进行渐变。</li>
+<li>MaterialFloatAnimationProperty：主要用于在 Unity 的材质上对某个浮点属性进行动画处理。</li>
+<li>OffsetAnimationProperty：用于对 RectTransform 的 offsetMin 和 offsetMax 属性进行动画处理。</li>
+<li>OpacityAnimationProperty：用于控制 Unity 中不同 UI 元素或渲染组件的透明度属性进行动画处理。</li>
+<li>PitchAnimationProperty：用于控制音频源或音频控制器的音调属性。</li>
+<li>PositionAnimationProperty：用于控制 Transform 位置属性进行动画处理。</li>
+<li>RectTransformAnimationProperty：用于动画控制 RectTransform 的位置属性进行动画处理。</li>
+<li>RotationAnimationProperty：用于动画控制 RectTransform 的旋转属性进行动画处理。</li>
+<li>ScaleAnimationProperty：用于动画控制 RectTransform 的缩放属性进行动画处理。</li>
+<li>TextFadeInAnimationProperty：用于控制文本淡入效果的类。</li>
+<li>TimeAnimationProperty：用于控制 Timeline 动画的类。</li>
+<li>VolumeAnimationProperty：用于控制音频的音量动画。</li>
+</ul>
+<p>动画脚本的基类：</p>
+<ul>
+<li>FloatBaseAnimationProperty：用于处理基于浮点数的动画属性。</li>
+<li>LazyComputableAnimationProperty：用于控制任何带有动画属性的对象，并支持懒计算。</li>
+</ul>
+<h2 id="输入系统"><a href="#输入系统" class="headerlink" title="输入系统"></a>输入系统</h2><h2 id="存档系统（旧）"><a href="#存档系统（旧）" class="headerlink" title="存档系统（旧）"></a>存档系统（旧）</h2><p><a target="_blank" rel="noopener" href="https://github.com/Lunatic-Works/Nova/wiki/Restoration">Nova Wiki: Restoration</a></p>
 <h3 id="global-nsav"><a href="#global-nsav" class="headerlink" title="global.nsav"></a>global.nsav</h3><p>为了实现存档和读档的速度，Nova的存档系统将 <code>global.nsav</code> 按照固定长度分块，一个块被称为一个 CheckpointBlock，默认为4kB。</p>
 <blockquote>
 <p>这里需要区分 <code>CheckpointBlock</code> 与 <code>GameStateCheckpoint</code>，前一个是存档文件的分块，后一个是用于恢复游戏状态的数据。</p>
@@ -405,7 +594,7 @@ I18n --&gt; UpdateI18nComponent(&quot;I18nXXX.UpdateXXX&quot;)</code></pre>
 <li><code>Checkpoint链表</code>：存储游戏历史中的所有状态，例如游戏中的音频大小、文本的位置和内容。</li>
 </ol>
 <p>global.nsav的文件结构大致如下图所示。</p>
-<p><img src="/images/nova-source-code_global.nsav-phy.svg" alt="global.nsav"></p>
+<p><img src="/./assets/global.nsav-phy.svg" alt="global.nsav-phy"></p>
 <p>可以参照CheckpointBlock的Flush方法的实现来理解。</p>
 <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">// CheckpointBlock Flush</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Flush</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (!dirty || stream == <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> index = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (id == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> version = BitConverter.GetBytes(CheckpointSerializer.Version);</span><br><span class="line">        <span class="keyword">var</span> header = CheckpointSerializer.FileHeader;</span><br><span class="line">        Buffer.BlockCopy(header, <span class="number">0</span>, data, <span class="number">0</span>, header.Length);</span><br><span class="line">        Buffer.BlockCopy(version, <span class="number">0</span>, data, header.Length, <span class="number">4</span>);</span><br><span class="line">        index += CheckpointSerializer.FileHeaderSize;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> x = BitConverter.GetBytes(_nextBlock);</span><br><span class="line">    Buffer.BlockCopy(x, <span class="number">0</span>, data, index, HeaderSize);</span><br><span class="line">    stream.Seek(offset, SeekOrigin.Begin);</span><br><span class="line">    stream.Write(data, <span class="number">0</span>, BlockSize);</span><br><span class="line">    dirty = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -415,11 +604,10 @@ I18n --&gt; UpdateI18nComponent(&quot;I18nXXX.UpdateXXX&quot;)</code></pre>
 <p>如果当前CheckpointBlock无法完全容纳数据，则剩余的数据将被写入下一个CheckpointBlock中。</p>
 <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">AppendRecord</span>(<span class="params"><span class="built_in">long</span> offset, ByteSegment bytes</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">var</span> block = GetBlockIndex(offset, <span class="keyword">out</span> <span class="keyword">var</span> index);</span><br><span class="line">    <span class="keyword">var</span> segment = block.segment;</span><br><span class="line">    <span class="keyword">if</span> (index + RecordHeader &gt; segment.Count)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">throw</span> CheckpointCorruptedException.RecordOverflow(offset);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    segment.WriteInt(index, bytes.Count);</span><br><span class="line">    index += RecordHeader;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> pos = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (pos &lt; bytes.Count)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> size = Math.Min(segment.Count - index, bytes.Count - pos);</span><br><span class="line">        segment.WriteBytes(index, bytes.Slice(pos, size));</span><br><span class="line">        block.MarkDirty();</span><br><span class="line">        pos += size;</span><br><span class="line">        <span class="keyword">if</span> (pos &lt; bytes.Count)</span><br><span class="line">        &#123;</span><br><span class="line">            block = NextBlock(block);</span><br><span class="line">            segment = block.segment;</span><br><span class="line">            index = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<h3 id="ByteSegment"><a href="#ByteSegment" class="headerlink" title="ByteSegment"></a>ByteSegment</h3><div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  classDiagram
 
-
-<h3 id="ByteSegment"><a href="#ByteSegment" class="headerlink" title="ByteSegment"></a>ByteSegment</h3><pre><code class="highlight mermaid">classDiagram
-
-class ByteSegment &#123;
+class ByteSegment {
     - array: byte[]
     %% 表示字节片段的起始位置在数组中的偏移量。
     - offset: int
@@ -441,52 +629,53 @@ class ByteSegment &#123;
     + WriteBytes(offset: int, bytes: byte[]) void
     + WriteBytes(offset: int, bytes: ByteSegment) void
     + WriteString(offset: int, str: string) void
-&#125;</code></pre>
+}
+  </pre></div>
 
 <h3 id="CheckpointManager-CheckpointSerializer"><a href="#CheckpointManager-CheckpointSerializer" class="headerlink" title="CheckpointManager &amp; CheckpointSerializer"></a>CheckpointManager &amp; CheckpointSerializer</h3><p>存储数据的初始化由 <code>CheckpointManager</code> 类负责。在这里，会初始化<code>GlobalSave</code>、<code>ReachedEndData</code>和<code>ReachedDialogueData</code>。</p>
 <figure class="highlight c#"><table><tr><td class="code"><pre><span class="line"><span class="comment">// CheckpointManager Init</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Init</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// ......</span></span><br><span class="line">    serializer = <span class="keyword">new</span> CheckpointSerializer(globalSavePath);</span><br><span class="line">    <span class="keyword">if</span> (!File.Exists(globalSavePath))</span><br><span class="line">    &#123;</span><br><span class="line">        ResetGlobalSave();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        serializer.Open();</span><br><span class="line">        InitGlobalSave();</span><br><span class="line">        InitReached();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> fileName <span class="keyword">in</span> Directory.GetFiles(savePathBase, <span class="string">&quot;sav*.sav*&quot;</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> result = Regex.Match(fileName, <span class="string">@&quot;sav([0-9]+)\.sav&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (result.Groups.Count &gt; <span class="number">1</span> &amp;&amp; <span class="built_in">int</span>.TryParse(result.Groups[<span class="number">1</span>].Value, <span class="keyword">out</span> <span class="built_in">int</span> id))</span><br><span class="line">        &#123;</span><br><span class="line">            bookmarksMetadata.Add(id, <span class="keyword">new</span> BookmarkMetadata</span><br><span class="line">            &#123;</span><br><span class="line">                saveID = id,</span><br><span class="line">                modifiedTime = File.GetLastWriteTime(fileName)</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    inited = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">InitGlobalSave</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    globalSave = serializer.DeserializeRecord&lt;GlobalSave&gt;(CheckpointSerializer.GlobalSaveOffset);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">InitReached</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    reachedDialogues.Clear();</span><br><span class="line">    reachedEnds.Clear();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> cur = globalSave.beginReached;</span><br><span class="line">         cur &lt; globalSave.endReached;</span><br><span class="line">         cur = serializer.NextRecord(cur))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">var</span> <span class="keyword">record</span> = serializer.DeserializeRecord&lt;IReachedData&gt;(cur);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">record</span> <span class="title">is</span> <span class="title">ReachedEndData</span> <span class="title">end</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            reachedEnds.Add(end.endName);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">record</span> <span class="title">is</span> <span class="title">ReachedDialogueData</span> <span class="title">dialogue</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            SetReachedDialogueData(dialogue);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">record</span> <span class="title">is</span> <span class="title">NodeUpgradeMaker</span> <span class="title">maker</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            reachedDialogues.Remove(maker.nodeName);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// check each reached data is a prefix</span></span><br><span class="line">    <span class="keyword">foreach</span> (<span class="keyword">var</span> reachedList <span class="keyword">in</span> reachedDialogues)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (reachedList.Value.Contains(<span class="literal">null</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">throw</span> CheckpointCorruptedException.BadReachedData(reachedList.Key);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>CheckpointSerializer 类是用于序列化和反序列化游戏数据的关键部分。</p>
-<pre><code class="highlight mermaid">classDiagram
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  classDiagram
 
-class ISerializationBinder &#123;
+class ISerializationBinder {
     &lt;&lt;interface&gt;&gt;
     + BindToType(string? assemblyName, string typeName) Type
     + BindToName(Type serializedType, out string? assemblyName, out string? typeName) void
-&#125;
+}
 
 JsonTypeBinder --|&gt; ISerializationBinder
-class JsonTypeBinder &#123;
+
+class JsonTypeBinder {
     $ Assembly CurAssembly
     $ HashSet~Assembly~ AllowedAssembly
-    $ IsPrimitiveType(Type serializedType, bool checkAssembly = true) bool
+    $ IsPrimitiveType(Type serializedType, bool checkAssembly &#x3D; true) bool
     $ IsAllowedAssembly(Type serializedType) bool
     - IsGameType(Type serializedType) bool
     - IsAllowedType(Type serializedType) bool
     + BindToName(Type serializedType, out string assemblyName, out string typeName) void
     + BindToType(string assemblyName, string typeName) Type
-&#125;
+}
+
 CheckpointJsonSerializer *-- JsonTypeBinder
+
 CheckpointJsonSerializer --&gt; JsonSerializer
 
 CheckpointSerializer *-- CheckpointJsonSerializer
-class CheckpointSerializer &#123;
+
+class CheckpointSerializer {
     + Version : int
-    %% 存档文件头的字节数据和大小。
     + FileHeader : byte[]
     + FileHeaderSize : int
 
     + GlobalSaveOffset : int
     - DefaultCompress : bool
     - RecordHeader : int
-    %% 一个 CheckpointJsonSerializer 实例，用于 JSON 序列化和反序列化存档数据。
     - jsonSerializer : JsonSerializer
     - path : string
-    %% FileStream 实例，用于操作存档文件。
     - file : FileStream
-    %% 存档中最后一个块的编号。
     - endBlock : long
-    %% 一个 LRUCache，用于缓存存档块数据，提高读取性能。
     - cachedBlocks : LRUCache~long, CheckpointBlock~
     + Open()
     + Dispose()
@@ -500,15 +689,18 @@ class CheckpointSerializer &#123;
     + NextRecord(long offset) long
     + AppendRecord(long offset, ByteSegment bytes) void
     + UpdateNodeRecord(NodeRecord record) void
-    + SerializeRecord~T~(long offset, T data, bool compress = DefaultCompress) void
-    + DeserializeRecord~T~(long offset, bool compress = DefaultCompress) T
-    + ReadBookmark(string path, bool compress = DefaultCompress) Bookmark
-    + WriteBookmark(string path, Bookmark obj, bool compress = DefaultCompress) void
-&#125;</code></pre>
+    + SerializeRecord~T~(long offset, T data, bool compress &#x3D; DefaultCompress) void
+    + DeserializeRecord~T~(long offset, bool compress &#x3D; DefaultCompress) T
+    + ReadBookmark(string path, bool compress &#x3D; DefaultCompress) Bookmark
+    + WriteBookmark(string path, Bookmark obj, bool compress &#x3D; DefaultCompress) void
+}
+  </pre></div>
 
-<pre><code class="highlight mermaid">classDiagram
 
-class CheckpointManager &#123;
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  classDiagram
+
+class CheckpointManager {
     - saveFolder : string
 
     - frozen : bool
@@ -520,7 +712,7 @@ class CheckpointManager &#123;
     - globalSave : GlobalSave
     - globalSaveDirty : bool
 
-    - reachedDialogues : Dictionary&amp;lt; string,List~ReachedDialogueData~ &amp;gt;
+    - reachedDialogues : Dictionary&lt; string,List~ReachedDialogueData~ &gt;
     - reachedEnds : SerializableHashSet~string~
     - cachedBookmarks : Dictionary~int, Bookmark~
     + bookmarksMetadata : Dictionary~int, BookmarkMetadata~
@@ -563,17 +755,19 @@ class CheckpointManager &#123;
 
     - GetBookmarkFileName(int saveID) string
     - ReplaceCache(int saveID, Bookmark bookmark) Bookmark
-    + SaveBookmark(int saveID, Bookmark bookmark, bool cache = true) void
-    + LoadBookmark(int saveID, bool cache = true) Bookmark
+    + SaveBookmark(int saveID, Bookmark bookmark, bool cache &#x3D; true) void
+    + LoadBookmark(int saveID, bool cache &#x3D; true) Bookmark
     + DeleteBookmark(int saveID) void
     + EagerLoadRange(int beginSaveID, int endSaveID) void
-&#125;</code></pre>
+}
+  </pre></div>
 
 <h3 id="Bookmark"><a href="#Bookmark" class="headerlink" title="Bookmark"></a>Bookmark</h3><p>存档&#x2F;读档界面中的每个存档称为书签（Bookmark），记录nodeOffset、checkpointOffset、dialogueIndex</p>
 <p>自动存档、快速存档与手动存档的格式是一样的</p>
-<pre><code class="highlight mermaid">classDiagram
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  classDiagram
 
-class Bookmark &#123;
+class Bookmark {
     + ScreenshotWidth : int
     + ScreenshotHeight : int
     + nodeOffset : long
@@ -585,11 +779,13 @@ class Bookmark &#123;
     + screenshotBytes : byte[]
     + screenshotTexture : Texture2D
     + screenshot : Texture2D
-&#125;</code></pre>
+}
+  </pre></div>
 
-<h3 id="NodeRecord"><a href="#NodeRecord" class="headerlink" title="NodeRecord"></a>NodeRecord</h3><pre><code class="highlight mermaid">classDiagram
+<h3 id="NodeRecord-1"><a href="#NodeRecord-1" class="headerlink" title="NodeRecord"></a>NodeRecord</h3><div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  classDiagram
 
-class NodeRecord &#123;
+class NodeRecord {
     - HeaderSize : int
     + offset : long
     + child : long
@@ -600,60 +796,68 @@ class NodeRecord &#123;
     + variablesHash : ulong
     + name : string
     + ToByteSegment() ByteSegment
-&#125;</code></pre>
+}
+  </pre></div>
 
 <h3 id="RestoreData-and-SerializedData"><a href="#RestoreData-and-SerializedData" class="headerlink" title="RestoreData and SerializedData"></a>RestoreData and SerializedData</h3><p><strong>GameStateCheckpoint</strong></p>
 <p>该类存储游戏对象下所有已注册可还原器在某一步的所有还原信息。</p>
 <p>由于脚本语法的设计，只有在运行时才能知道每一步的对象状态。</p>
 <p>为了实现后退功能，游戏状态对象应知道每一步的所有 GameStateRestoreEntry，以便执行后退。为使后退功能在从检查点加载后仍能正常工作，CheckpointManager 应存储所有走过的对话框的 GameStateRestoreEntry。</p>
-<pre><code class="highlight mermaid">classDiagram
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  classDiagram
 
-class ISerializedData &#123;
+class ISerializedData {
     &lt;&lt;interface&gt;&gt;
-&#125;
+}
 
 IRestoreData --|&gt; ISerializedData
-class IRestoreData &#123;
+
+class IRestoreData {
     &lt;&lt;interface&gt;&gt;
-&#125;
+}
 
 IReachedData --|&gt; ISerializedData
-class IReachedData &#123;
+
+class IReachedData {
     &lt;&lt;interface&gt;&gt;
-&#125;
+}
 
 GameStateCheckpoint --&gt; ISerializedData
-class GameStateCheckpoint &#123;
+
+class GameStateCheckpoint {
     + dialogueIndex : int
     + stepsCheckpointRestrained : int
     + restoreDatas : Dictionary~string, IRestoreData~
     + variables : Variables
-&#125;
+}
 
 ReachedEndData --&gt; IReachedData
-class ReachedEndData &#123;
+
+class ReachedEndData {
     + endName: string
-&#125;
+}
 
 ReachedDialogueData --&gt; IReachedData
-class ReachedDialogueData &#123;
+
+class ReachedDialogueData {
     + nodeName : string
     + dialogueIndex : int
     + voices : VoiceEntries
     + needInterpolate: bool
     + textHash : string
-&#125;
+}
 
-
-class ReachedDialoguePosition &#123;
+class ReachedDialoguePosition {
     + nodeRecord ： NodeRecord
     + checkpointOffset : long
     + dialogueIndex : int
-&#125;</code></pre>
+}
+  </pre></div>
 
-<pre><code class="highlight mermaid">classDiagram
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  classDiagram
 
-class GlobalSave &#123;
+class GlobalSave {
     + identifier : long
     + beginReached : long
     + endReached : long
@@ -661,170 +865,65 @@ class GlobalSave &#123;
     + endCheckpoint : long
     + nodeHashes : Dictionary~string, ulong~
     + data : Dictionary~string, object~
-&#125;</code></pre>
+}
+  </pre></div>
 
 <h3 id="IRestorable"><a href="#IRestorable" class="headerlink" title="IRestorable"></a>IRestorable</h3><p>IRestorable 接口代表一个对象，当 GameState 向后移动时，该对象会恢复其状态。</p>
-<pre><code class="highlight mermaid">classDiagram
+<div class="mermaid-wrap"><pre class="mermaid-src" hidden>
+  classDiagram
 
-class IRestorable &#123;
+class IRestorable {
     + restorableName : string
     + GetRestoreData() IRestoreData
     + Restore(restoreData : IRestoreData) void
-&#125;</code></pre>
+}
+  </pre></div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://soryu-ryouji.cc">Soryu Ryouji</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://soryu-ryouji.cc/2024/06/09/nova_source_code/">https://soryu-ryouji.cc/2024/06/09/nova_source_code/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://soryu-ryouji.cc" target="_blank">Ryouji's World</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/unity/">unity</a></div><div class="post-share"><div class="social-share" data-image="/img/avatar.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="prev-post pull-left" href="/2024/09/01/unity_optimization_01_script/" title="Unity 性能优化：脚本优化"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Unity 性能优化：脚本优化</div></div></a><a class="next-post pull-right" href="/2024/05/12/writing_unit_tests_for_csharp_in_vscode/" title="如何在vscode中为c#编写单元测试"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">如何在vscode中为c#编写单元测试</div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a href="/2024/09/28/unity_extension/" title="Unity 编辑器拓展"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-28</div><div class="title">Unity 编辑器拓展</div></div></a><a href="/2024/09/01/unity_optimization_01_script/" title="Unity 性能优化：脚本优化"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-01</div><div class="title">Unity 性能优化：脚本优化</div></div></a><a href="/2024/09/01/unity_optimization_01_ui/" title="Unity 性能优化：界面优化"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-01</div><div class="title">Unity 性能优化：界面优化</div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info is-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Soryu Ryouji</div><div class="author-info-description">一个存放短篇小说或杂文的个人网站</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">7</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">6</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/soryu-ryouji"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Lua-with-Nova"><span class="toc-number">1.</span> <span class="toc-text">Lua with Nova</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#LuaRuntime"><span class="toc-number">1.1.</span> <span class="toc-text">LuaRuntime</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%A7%E6%9C%AC%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="toc-number">2.</span> <span class="toc-text">剧本解析器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Parser"><span class="toc-number">2.1.</span> <span class="toc-text">Parser</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FlowChartGraph"><span class="toc-number">2.2.</span> <span class="toc-text">FlowChartGraph</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GameState"><span class="toc-number">3.</span> <span class="toc-text">GameState</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B8%B8%E6%88%8F%E7%8A%B6%E6%80%81%E4%B8%8E-GameStateCheckpoint"><span class="toc-number">3.1.</span> <span class="toc-text">游戏状态与 GameStateCheckpoint</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GameState-%E5%A6%82%E4%BD%95%E6%8E%A8%E8%BF%9B%E8%BF%9B%E5%BA%A6"><span class="toc-number">3.2.</span> <span class="toc-text">GameState 如何推进进度</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NodeRecord"><span class="toc-number">4.</span> <span class="toc-text">NodeRecord</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%BC%9A%E5%88%9B%E5%BB%BA-NodeRecord"><span class="toc-number">4.1.</span> <span class="toc-text">什么时候会创建 NodeRecord</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%98%E6%A1%A3%E7%B3%BB%E7%BB%9F"><span class="toc-number">5.</span> <span class="toc-text">存档系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E6%81%A2%E5%A4%8D%E7%BB%84%E4%BB%B6"><span class="toc-number">5.1.</span> <span class="toc-text">可恢复组件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GameStateCheckpoint-%E4%B8%8E-CheckpointBlock"><span class="toc-number">5.2.</span> <span class="toc-text">GameStateCheckpoint 与 CheckpointBlock</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CheckpointBlock-%E4%B8%8E-Record"><span class="toc-number">5.2.1.</span> <span class="toc-text">CheckpointBlock 与 Record</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%94%E5%87%BA%E6%8E%A7%E5%88%B6"><span class="toc-number">6.</span> <span class="toc-text">演出控制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#VFX"><span class="toc-number">6.1.</span> <span class="toc-text">VFX</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#lua-function-vfx"><span class="toc-number">6.1.1.</span> <span class="toc-text">lua function - vfx</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#lua-function-get-mat"><span class="toc-number">6.1.2.</span> <span class="toc-text">lua function - get_mat</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#lua-function-set-mat"><span class="toc-number">6.1.3.</span> <span class="toc-text">lua function - set_mat</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#lua-function-trans2"><span class="toc-number">6.1.4.</span> <span class="toc-text">lua function - trans2</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MaterialFactory"><span class="toc-number">6.1.5.</span> <span class="toc-text">MaterialFactory</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MaterialPool"><span class="toc-number">6.1.6.</span> <span class="toc-text">MaterialPool</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E8%AF%AD%E8%A8%80%E6%94%AF%E6%8C%81"><span class="toc-number">7.</span> <span class="toc-text">多语言支持</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#I18n-UI"><span class="toc-number">7.1.</span> <span class="toc-text">I18n UI</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#I18nText-I18nImage"><span class="toc-number">7.1.1.</span> <span class="toc-text">I18nText &amp; I18nImage</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#I18n-Scenarios"><span class="toc-number">7.2.</span> <span class="toc-text">I18n Scenarios</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A8%E7%94%BB%E7%B3%BB%E7%BB%9F"><span class="toc-number">8.</span> <span class="toc-text">动画系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BE%93%E5%85%A5%E7%B3%BB%E7%BB%9F"><span class="toc-number">9.</span> <span class="toc-text">输入系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%98%E6%A1%A3%E7%B3%BB%E7%BB%9F%EF%BC%88%E6%97%A7%EF%BC%89"><span class="toc-number">10.</span> <span class="toc-text">存档系统（旧）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#global-nsav"><span class="toc-number">10.1.</span> <span class="toc-text">global.nsav</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CheckpointBlock-%E7%B1%BB%E5%9B%BE"><span class="toc-number">10.1.1.</span> <span class="toc-text">CheckpointBlock 类图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E5%90%91global-nsav%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%AE%B0%E5%BD%95"><span class="toc-number">10.1.2.</span> <span class="toc-text">如何向global.nsav中添加记录</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ByteSegment"><span class="toc-number">10.2.</span> <span class="toc-text">ByteSegment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CheckpointManager-CheckpointSerializer"><span class="toc-number">10.3.</span> <span class="toc-text">CheckpointManager &amp; CheckpointSerializer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Bookmark"><span class="toc-number">10.4.</span> <span class="toc-text">Bookmark</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NodeRecord-1"><span class="toc-number">10.5.</span> <span class="toc-text">NodeRecord</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RestoreData-and-SerializedData"><span class="toc-number">10.6.</span> <span class="toc-text">RestoreData and SerializedData</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IRestorable"><span class="toc-number">10.7.</span> <span class="toc-text">IRestorable</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/09/28/unity_extension/" title="Unity 编辑器拓展">Unity 编辑器拓展</a><time datetime="2024-09-28T13:00:00.000Z" title="发表于 2024-09-28 21:00:00">2024-09-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/09/01/unity_optimization_01_ui/" title="Unity 性能优化：界面优化">Unity 性能优化：界面优化</a><time datetime="2024-09-01T05:47:00.000Z" title="发表于 2024-09-01 13:47:00">2024-09-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/09/01/unity_optimization_01_script/" title="Unity 性能优化：脚本优化">Unity 性能优化：脚本优化</a><time datetime="2024-08-31T16:35:00.000Z" title="发表于 2024-09-01 00:35:00">2024-09-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/06/09/nova_source_code/" title="Nova 源码解析">Nova 源码解析</a><time datetime="2024-06-09T12:00:00.000Z" title="发表于 2024-06-09 20:00:00">2024-06-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/05/12/writing_unit_tests_for_csharp_in_vscode/" title="如何在vscode中为c#编写单元测试">如何在vscode中为c#编写单元测试</a><time datetime="2024-05-11T17:10:00.000Z" title="发表于 2024-05-12 01:10:00">2024-05-12</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2024 By Soryu Ryouji</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const runMermaid = ele => {
+    window.loadMermaid = true
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'neutral'
 
-<h3 id="GameState"><a href="#GameState" class="headerlink" title="GameState"></a>GameState</h3><p>GameState 记录了AVG的所有状态，因此只要将游戏的 GameState 回退到某个时刻，就能实现游戏的进度回退。</p>
-<pre><code class="highlight mermaid">classDiagram
+    ele.forEach((item, index) => {
+      const mermaidSrc = item.firstElementChild
+      const mermaidThemeConfig = `%%{init:{ 'theme':'${theme}'}}%%\n`
+      const mermaidID = `mermaid-${index}`
+      const mermaidDefinition = mermaidThemeConfig + mermaidSrc.textContent
 
-class GameState &#123;
-    - scriptPath : string
-    - scriptLoader : ScriptLoader
-    - flowChartGraph : FlowChartGraph
-    - checkpointManager : CheckpointManager
-    - initialCheckpoint : GameStateCheckpoint
-    - advancedDialogueHelper : AdvancedDialogueHelper
-    - coroutineHelper : CoroutineHelper
-    - nodeRecord : NodeRecord
-    - checkpointOffset : long
-    - currentNode : FlowChartNode
-    - currentIndex : int
-    - currentDialogueEntry : DialogueEntry
-    - variables : Variables
-    - state : State
-    - isEnded : bool
-    + ResetGameState() void
-    + gameStarted : UnityEvent
-    + nodeChanged : NodeChangedEvent
-    + dialogueWillChange : UnityEvent
-    + dialogueChangedEarly : DialogueChangedEvent
-    + dialogueChanged : DialogueChangedEvent
-    + selectionOccurs : SelectionOccursEvent
-    + routeEnded : RouteEndedEvent
-    + restoreStarts : UnityEvent
-    - currentVoices Dictionary~string, VoiceEntry~
-    + AddVoice(string characterName, VoiceEntry voiceEntry) void
-    - actionCoroutine : Coroutine
-    - ExecuteAction(IEnumerator coroutine) void
-    - CancelAction() void
-    - ResetActionContext() void
-    - actionPauseLock : CounterLock
-    + AcquireActionPause() void
-    + ReleaseActionPause() void
-    - variablesHashBeforeInterrupt : ulong
-    + StartInterrupt() void
-    + StopInterrupt() void
-    + SignalFence(object value) void
-    - UpdateGameState(bool nodeChanged, bool dialogueChanged, bool firstEntryOfNode, bool dialogueStepped, bool fromCheckpoint) void
-    - UpdateDialogue(bool firstEntryOfNode, bool dialogueStepped, bool fromCheckpoint) IEnumerator
-    - StepCheckpoint(bool isReached) void
-    - DialogueSaveCheckpoint(bool firstEntryOfNode, bool dialogueStepped) bool
-    - DialogueSaveReachedData(out ReachedDialogueData dialogueData) bool
-    - StepAtEndOfNode() void
-    - AppendSameNode() void
-    - MoveToNextNode(FlowChartNode nextNode) void
-    - DoBranch(IEnumerable&lt;BranchInformation&gt; branchInfos) IEnumerator
-    - SelectBranch(string branchName) void
-    - SaveInitialCheckpoint() void
-    - GameStart(FlowChartNode startNode) void
-    + GameStart(string nodeName) void
-    + GetNode(string name, bool addDeferred = true) FlowChartNode
-    + GetStartNodeNames(StartNodeType type = StartNodeType.Normal) IEnumerable~string~
-    + canStepForward : bool
-    + Step() void
-    + RaiseSelections(IReadOnlyList&lt;SelectionOccursData.Selection&gt; selections) void
-    - Dictionary~string, IRestorable~ restorables
-    + AddRestorable(IRestorable restorable) void
-    + RemoveRestorable(IRestorable restorable) void
+      const renderFn = mermaid.render(mermaidID, mermaidDefinition)
+      const renderMermaid = svg => {
+        mermaidSrc.insertAdjacentHTML('afterend', svg)
+      }
 
-    %% 并非所有对象的状态都能轻易恢复，比如保持动画。
-    %% 我们会存储一些检查点，其他状态可以通过从上一个检查点重新执行来恢复。
-    %% 从最后一个检查点开始每隔 maxStepsFromLastCheckpoint 至少会保存一个检查点，保持动画期间除外。
-    - maxStepsFromLastCheckpoint : int
-    + WarningStepsFromLastCheckpoint : int
-    - stepsFromLastCheckpoint : int
-    - stepsCheckpointRestrained : int
-    - checkpointRestrained : bool
+      // mermaid v9 and v10 compatibility
+      typeof renderFn === 'string' ? renderMermaid(renderFn) : renderFn.then(({ svg }) => renderMermaid(svg))
+    })
+  }
 
-    + RestrainCheckpoint(int steps, bool overridden = false) void
-    %% 用于在保持动画开始前强制保存检查点。
-    - bool checkpointEnsured
-    %% 在使用 anim_hold_begin 时由预载系统使用
-    %% 当前对话是否有检查点是在 Lua 代码运行之前决定的、所以我们只能在下一次对话中确保它
-    + EnsureCheckpointOnNextDialogue() void
+  const codeToMermaid = () => {
+    const codeMermaidEle = document.querySelectorAll('pre > code.mermaid')
+    if (codeMermaidEle.length === 0) return
 
-    - appendNodeEnsured : bool
-    - atEndOfNodeRecord : bool
-    - shouldSaveCheckpoint : bool
-    - GetCheckpoint() GameStateCheckpoint
-    - RestoreCheckpoint(GameStateCheckpoint entry) void
-    - SeekBackStep(int steps, IList~NodeRecord~ nodeHistory, out long newCheckpointOffset, out int newDialogueIndex) void
-    - SeekBackStep(int steps, out NodeRecord nodeRecord, out long newCheckpointOffset, out int newDialogueIndex) void
-    + isUpgrading : bool
-    + isRestoring : bool
-    - CheckUnlockInRestoring() bool
-    - FastForward(int stepCount) void
-    - Move(NodeRecord newNodeRecord, long newCheckpointOffset, int dialogueIndex, bool upgrade) void
-    + MoveBackTo(NodeRecord newNodeRecord, long newCheckpointOffset, int dialogueIndex) void
-    + MoveToUpgrade(NodeRecord newNodeRecord, int lastDialogue) void
-    + MoveBackToFirstDialogue() void
-    %% Move to previous/next chapter/branch.
-    + MoveToKeyPoint(bool forward, bool allowChapter, bool allowBranch = true) void
-    + GetDialogueHistory(int limit = 0) IEnumerable~ReachedDialoguePosition~
-    + GetBookmark() Bookmark
-    + LoadBookmark(Bookmark bookmark) void
-&#125;</code></pre>
+    codeMermaidEle.forEach(ele => {
+      const preEle = document.createElement('pre')
+      preEle.className = 'mermaid-src'
+      preEle.hidden = true
+      preEle.textContent = ele.textContent
+      const newEle = document.createElement('div')
+      newEle.className = 'mermaid-wrap'
+      newEle.appendChild(preEle)
+      ele.parentNode.replaceWith(newEle)
+    })
+  }
 
+  const loadMermaid = () => {
+    if (true) codeToMermaid()
+    const $mermaid = document.querySelectorAll('#article-container .mermaid-wrap')
+    if ($mermaid.length === 0) return
 
-      
+    const runMermaidFn = () => runMermaid($mermaid)
+    btf.addGlobalFn('themeChange', runMermaidFn, 'mermaid')
+    window.loadMermaid ? runMermaidFn() : btf.getScript('https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js').then(runMermaidFn)
+  }
 
-    </section>
-    
-      <section class='ArticleMeta'>
-          <div>
-            发布于&nbsp;
-            <time datetime="2024-06-09T12:00:00.000Z" itemprop="datePublished">
-              2024-06-09
-            </time>
-          </div>
-          
-            <div>
-              tags: 
-  <li class="meta-text">
-  { <a href="/tags/unity/">unity</a> }
-  </li>
-
-
-            </div>
-          
-      </section>
-    
-    
-</article>
-
-  
-</div>
-
-            <footer>
-    <div>© 2024 - Soryu Ryouji </div>
-    <div>
-        <span>
-            Powered by <a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a>
-        </span>
-        ,
-        <span>
-            Theme - <a target="_blank" rel="noopener" href="https://github.com/nameoverflow/hexo-theme-icalm">Icalm</a>
-        </span>
-    </div>
-</footer>
-
-        </div>
-    </div>
-</div>
-
-<script src="/js/pager/dist/singlepager.js"></script>
-
-<script>
-var sp = new Pager('data-pager-shell')
-
-</script>
-</body>
-</html>
+  btf.addGlobalFn('encrypt', loadMermaid, 'mermaid')
+  window.pjax ? loadMermaid() : document.addEventListener('DOMContentLoaded', loadMermaid)
+})()</script></div></div></body></html>
